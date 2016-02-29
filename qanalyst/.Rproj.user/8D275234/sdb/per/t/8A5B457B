@@ -1,0 +1,18 @@
+{
+    "contents" : "rm(list = ls())\nrequire(dplyr)\nrequire(lazyeval)\nrequire(reshape2)\ntbb_ <- function(data ,x, y , z, fun ){\n\n  stat_dots   <- setNames(\n    list(interp( ~fun(z), z = as.name(z))), c(\"stat\")\n  )\n\n  out <- data %>%\n    group_by_(x, y) %>%\n    summarise_(.dots = stat_dots)\n\n\n  return(out)\n }\n\ntbb_(mtcars , x = \"carb\", y = \"gear\", z = \"mpg\" , fun = sum)\n#########################################\n\nrm(list = ls())\ntbb_ <- function(data ,z, group_dots, fun ){\n\n   stat_dots   <- setNames(\n     list(interp( ~fun(z), z = as.name(z))), c(\"stat\")\n   )\n\n   #group_dots <- lazyeval::all_dots(..., all_named = TRUE)\n\n\n   out <- data %>%\n     group_by_(.dots = group_dots) %>%\n     summarise_(.dots = stat_dots)\n\n  return(out)\n}\n\n#tbb_(mtcars , x = \"carb\", y = \"gear\", z = \"mpg\" , fun = sum)\ntbb_(mtcars , z = \"mpg\", alist(y = \"gear\", x = \"carb\") , fun = sum)\n\n#tbb_(mtcars , x = \"carb\",  z = \"mpg\" , fun = sum)\n#tbb_(mtcars , y = \"gear\",  z = \"mpg\" , fun = sum)\n\n\n#########################################\n\ntbb  <- function (data ,z, ..., fun ){\n    z <- substitute(z)\n    #group_dots <- substitute(alist(...))\n\n    group_dots <- lazyeval::lazy_dots(...)\n\n  out <- tbb_ (data, group_dots = group_dots ,z = z , fun = fun )\n  return(out)\n}\n\ntbb(mtcars , x = carb, y = gear, z = mpg , fun = sum)\ntbb(mtcars , y = gear, z = mpg , fun = sum)\ntbb(mtcars , pippo  = carb, z = mpg , fun = sum)\n\n\n\ntest <- tbb(mtcars , x = carb, y = gear, z = mpg , fun = sum)\n\n#tbb(mtcars , mpg~gear+carb, fun = function(x, ...) mean(x, na.rm = T))\n\n#table function\ntest_table <- dcast(test , x~y, value.var = \"stat\")\n\n#print function\nxtable(test_table)\n\n",
+    "created" : 1447688447943.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2890108923",
+    "id" : "8A5B457B",
+    "lastKnownWriteTime" : 1447695200,
+    "path" : "~/gdrive/quantide/cst/optima/201510-credito/test1.R",
+    "project_path" : null,
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "type" : "r_source"
+}

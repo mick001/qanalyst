@@ -1,0 +1,17 @@
+{
+    "contents" : "#' plot.spc\n#' plot an object of class spc\n#' @param spc object\n#' @param colours for statistics, center line, ucl and lcl\n#' @importFrom ggplot2  ggplot geom_line aes\n#' @return A ggplot object\n#' @examples\n#' #Ingots Data\n#' ingots_xbar_r <- xbar_r (ingots, kg, group)\n#' plot(ingots_xbar_r)\n#' #Pistonrings Data\n#' pistonrings_xbar_r <- xbar_r (pistonrings[1:125,], diameter, sample)\n#' plot(pistonrings_xbar_r)\n#' @S3method plot spc\nplot.spc <- function(data, colour = c(\"darkblue\", \"darkred\", \"darkred\", \"darkred\")){\n  stat_colour = colour[1]\n  center_colour = colour[2]\n  lcl_colour = colour[3]\n  ucl_colour = colour[4]\n\n  pl <- ggplot(data = data, mapping = aes(x = group, y = stat))\n  pl <- pl  +\n    geom_line(mapping = aes(y = center), colour = center_colour, lwd = 2) +\n    geom_line(mapping = aes(y = ucl), colour = lcl_colour) +\n    geom_line(mapping = aes(y = lcl), colour = ucl_colour) +\n    geom_line(colour = stat_colour)\n\n  #print plot\n  print(pl)\n  #return\n  invisible(NULL)\n}\n\n\n",
+    "created" : 1443472004245.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "135875197",
+    "id" : "620DD5AB",
+    "lastKnownWriteTime" : 1443475761,
+    "path" : "~/gdrive/quantide/int/qAnalyst/R/plot.R",
+    "project_path" : "R/plot.R",
+    "properties" : {
+        "tempName" : "Untitled2"
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}

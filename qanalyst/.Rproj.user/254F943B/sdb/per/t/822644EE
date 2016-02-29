@@ -1,0 +1,17 @@
+{
+    "contents" : "#' Computes  max(x) - min(x)\n#' @return A numeric vector of length one\n#' @examples\n#' diff_range(x = 1:5)\n#' diff_range(x = c(1:5, NA), na.rm = TRUE)\n#' @export\ndiff_range <- function(x, ...) {diff(range(x, ...))}\n",
+    "created" : 1440877861140.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "4037263142",
+    "id" : "822644EE",
+    "lastKnownWriteTime" : 1441286797,
+    "path" : "~/gdrive/quantide/int/qAnalyst/R/utils.R",
+    "project_path" : "R/utils.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}

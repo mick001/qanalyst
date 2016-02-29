@@ -1,0 +1,17 @@
+{
+    "contents" : "\nrequire(qcc)\ndata(pistonrings)\nattach(pistonrings)\ndiameter <- qcc.groups(diameter, sample)\ntest_qcc <- qcc(diameter[1:25,], type=\"xbar\")\nqcc(diameter[1:25,], type=\"xbar\", newdata=diameter[26:40,])\nq <- qcc(diameter[1:25,], type=\"xbar\", newdata=diameter[26:40,], plot=FALSE)\nplot(q, chart.all=FALSE)\nqcc(diameter[1:25,], type=\"xbar\", newdata=diameter[26:40,], nsigmas=2)\nqcc(diameter[1:25,], type=\"xbar\", newdata=diameter[26:40,], confidence.level=0.99)\nqcc(diameter[1:25,], type=\"R\")\nqcc(diameter[1:25,], type=\"R\", newdata=diameter[26:40,])\nqcc(diameter[1:25,], type=\"S\")\nqcc(diameter[1:25,], type=\"S\", newdata=diameter[26:40,])\n\nhead(diameter)\n",
+    "created" : 1443469584460.000,
+    "dirty" : true,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "3767400551",
+    "id" : "32002897",
+    "lastKnownWriteTime" : 9977008,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}

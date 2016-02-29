@@ -1,0 +1,512 @@
+tbb(mtcars , mpg~gear+carb, fun = sum)
+tbb_ <- function(data ,x, y , z, fun , ...){
+stat_dots   <- setNames(
+list(interp( ~fun(z, ...), z = as.name(z))), c("stat")
+)
+out <- data %>%
+group_by_(x, y) %>%
+summarise_(.dots = stat_dots)
+return(out)
+}
+#tbb_(mtcars , mpg~gear+carb, fun = sum)
+tbb_(mtcars , x = "carb", y = "gear", z = "mpg" , fun = sum)
+tbb_ <- function(data ,x, y , z, fun ){
+stat_dots   <- setNames(
+list(interp( ~fun(z), z = as.name(z))), c("stat")
+)
+out <- data %>%
+group_by_(x, y) %>%
+summarise_(.dots = stat_dots)
+return(out)
+}
+#tbb_(mtcars , mpg~gear+carb, fun = sum)
+tbb_(mtcars , x = "carb", y = "gear", z = "mpg" , fun = sum)
+tbb  <- function (data ,formula, fun , ...){
+vars <- all.vars(formula)
+z <- vars[1]
+x <- vars[2]
+y <- vars[3]
+out <- tbb_ (data, x , y ,z , fun , ...)
+return(out)
+}
+tbb(mtcars , mpg~gear+carb, fun = sum)
+tbb  <- function (data ,formula, fun ){
+vars <- all.vars(formula)
+z <- vars[1]
+x <- vars[2]
+y <- vars[3]
+out <- tbb_ (data, x , y ,z , fun )
+return(out)
+}
+tbb(mtcars , mpg~gear+carb, fun = sum)
+?interp
+tbb(mtcars , mpg~gear+carb, fun = function(x, ...) mean(x, na.rm = T))
+?xtable
+test <- tbb(mtcars , mpg~gear+carb, fun = sum)
+require(xtable)
+?xtable
+xtable(mtcars)
+?table
+require(tidyr)
+install.packages("tidyr")
+require(tidyr)
+test
+spread(test , gear, carb)
+spread(test , gear, carb, stat)
+test
+spread(test , gear, carb, stat)
+?spread
+spread(test , gear, carb)
+melt(test , id.vars = c("gear", "carb"))
+require(reshape2)
+melt(test , id.vars = c("gear", "carb"))
+cast
+?melt
+dcast(test , gear~carb~stat)
+test
+dcast(test , gear~carb)
+test
+dcast(test , gear~carb, value.var = "stat")
+xtable(test_table)
+test_table <- dcast(test , gear~carb, value.var = "stat")
+xtable(test_table)
+?group_by
+dplyr::summarise_
+dplyr::summarise_.data.frame
+dplyr:::summarise_.data.frame
+?summarise_
+?lazyeval::all_dots
+tbb_ <- function(data ,x, ..., fun ){
+#   stat_dots   <- setNames(
+#     list(interp( ~fun(z), z = as.name(z))), c("stat")
+#   )
+#
+dots <- lazyeval::all_dots(..., all_named = TRUE)
+#   group_dots   <- setNames(
+#     list(interp( ~fun(z), z = as.name(z))), c("stat")
+#   )
+#
+#
+#   out <- data %>%
+#     group_by_(x, y) %>%
+#     summarise_(.dots = stat_dots)
+#
+return(dots)
+}
+tbb_(mtcars , x = "carb", y = "gear", z = "mpg" , fun = sum)
+tbb_ <- function(data ,z, ..., fun ){
+#   stat_dots   <- setNames(
+#     list(interp( ~fun(z), z = as.name(z))), c("stat")
+#   )
+#
+dots <- lazyeval::all_dots(..., all_named = TRUE)
+#   group_dots   <- setNames(
+#     list(interp( ~fun(z), z = as.name(z))), c("stat")
+#   )
+#
+#
+#   out <- data %>%
+#     group_by_(x, y) %>%
+#     summarise_(.dots = stat_dots)
+#
+return(dots)
+}
+tbb_(mtcars , x = "carb", y = "gear", z = "mpg" , fun = sum)
+tbb_ <- function(data ,z, ..., fun ){
+stat_dots   <- setNames(
+list(interp( ~fun(z), z = as.name(z))), c("stat")
+)
+dots <- lazyeval::all_dots(..., all_named = TRUE)
+#   group_dots   <- setNames(
+#     list(interp( ~fun(z), z = as.name(z))), c("stat")
+#   )
+#
+#
+#   out <- data %>%
+#     group_by_(x, y) %>%
+#     summarise_(.dots = stat_dots)
+#
+return(dots)
+}
+tbb_(mtcars , x = "carb", y = "gear", z = "mpg" , fun = sum)
+tbb_ <- function(data ,z, ..., fun ){
+stat_dots   <- setNames(
+list(interp( ~fun(z), z = as.name(z))), c("stat")
+)
+group_dots <- lazyeval::all_dots(..., all_named = TRUE)
+out <- data %>%
+group_by_(.dots = group_dots) %>%
+summarise_(.dots = stat_dots)
+return(out)
+}
+tbb_(mtcars , x = "carb", y = "gear", z = "mpg" , fun = sum)
+tbb_(mtcars , x = "carb",  z = "mpg" , fun = sum)
+tbb_(mtcars , y = "gear",  z = "mpg" , fun = sum)
+tbb  <- function (data ,formula, fun ){
+vars <- all.vars(formula)
+z <- vars[1]
+... <- vars[-1]
+out <- tbb_ (data, ... ,z , fun )
+return(out)
+}
+test <- tbb(mtcars , mpg~gear+carb, fun = sum)
+group_by
+group_by_
+group_by_.data.farme
+group_by_.data.frame
+dplyr:::group_by_.data.frame
+tbb_ <- function(data ,z, ..., fun ){
+stat_dots   <- setNames(
+list(interp( ~fun(z), z = as.name(z))), c("stat")
+)
+#group_dots <- lazyeval::all_dots(..., all_named = TRUE)
+out <- data %>%
+group_by_(.dots = ...) %>%
+summarise_(.dots = stat_dots)
+return(out)
+}
+tbb_(mtcars , x = "carb", y = "gear", z = "mpg" , fun = sum)
+tbb_(mtcars , x = "carb",  z = "mpg" , fun = sum)
+tbb_(mtcars , y = "gear",  z = "mpg" , fun = sum)
+rm(list = ls())
+tbb_ <- function(data ,z, ..., fun ){
+stat_dots   <- setNames(
+list(interp( ~fun(z), z = as.name(z))), c("stat")
+)
+#group_dots <- lazyeval::all_dots(..., all_named = TRUE)
+out <- data %>%
+group_by_(.dots = ...) %>%
+summarise_(.dots = stat_dots)
+return(out)
+}
+tbb_(mtcars , x = "carb", y = "gear", z = "mpg" , fun = sum)
+tbb_(mtcars , x = "carb",  z = "mpg" , fun = sum)
+tbb_(mtcars , y = "gear",  z = "mpg" , fun = sum)
+tbb  <- function (data ,z, ..., fun ){
+z <- substitute(z)
+group_dots <- lazyeval::all_dots(..., all_named = TRUE)
+out <- tbb_ (data, group_dots ,z = z , fun = fun )
+return(out)
+}
+test <- tbb(mtcars , mpg~gear+carb, fun = sum)
+tbb_(mtcars , x = carb, y = gear, z = mpg , fun = sum)
+tbb(mtcars , x = carb, y = gear, z = mpg , fun = sum)
+tbb  <- function (data ,z, ..., fun ){
+z <- substitute(z)
+group_dots <- lazyeval::lazy_dots(..., all_named = TRUE)
+out <- tbb_ (data, group_dots ,z = z , fun = fun )
+return(out)
+}
+tbb(mtcars , x = carb, y = gear, z = mpg , fun = sum)
+tbb  <- function (data ,z, ..., fun ){
+z <- substitute(z)
+group_dots <- lazyeval::all_dots(..., all_named = TRUE)
+#out <- tbb_ (data, group_dots ,z = z , fun = fun )
+return(group_dots)
+}
+tbb(mtcars , x = carb, y = gear, z = mpg , fun = sum)
+rm(list = ls())
+tbb_ <- function(data ,z, ..., fun ){
+stat_dots   <- setNames(
+list(interp( ~fun(z), z = as.name(z))), c("stat")
+)
+group_dots <- lazyeval::all_dots(..., all_named = TRUE)
+out <- data %>%
+group_by_(.dots = ...) %>%
+summarise_(.dots = stat_dots)
+return(out)
+}
+tbb_(mtcars , x = "carb", y = "gear", z = "mpg" , fun = sum)
+tbb  <- function (data ,z, ..., fun ){
+z <- substitute(z)
+#group_dots <- lazyeval::all_dots(..., all_named = TRUE)
+out <- tbb_ (data, group_dots ,z = z , fun = fun )
+return(group_dots)
+}
+tbb(mtcars , x = carb, y = gear, z = mpg , fun = sum)
+tbb  <- function (data ,z, ..., fun ){
+z <- substitute(z)
+group_dots <- lazyeval::all_dots(..., all_named = TRUE)
+out <- tbb_ (data, group_dots ,z = z , fun = fun )
+return(group_dots)
+}
+tbb(mtcars , x = carb, y = gear, z = mpg , fun = sum)
+tbb  <- function (data ,z, ..., fun ){
+z <- substitute(z)
+group_dots <- lazyeval::lazy_dots(..., all_named = TRUE)
+#out <- tbb_ (data, group_dots ,z = z , fun = fun )
+return(group_dots)
+}
+tbb(mtcars , x = carb, y = gear, z = mpg , fun = sum)
+tbb  <- function (data ,z, ..., fun ){
+z <- substitute(z)
+group_dots <- lazyeval::lazy_dots(..., all_named = TRUE)
+out <- tbb_ (data, group_dots ,z = z , fun = fun )
+return(group_dots)
+}
+tbb(mtcars , x = carb, y = gear, z = mpg , fun = sum)
+tbb  <- function (data ,z, ..., fun ){
+z <- substitute(z)
+group_dots <- lazyeval::lazy_dots(..., all_named = TRUE)
+out <- tbb_ (data, ... = group_dots ,z = z , fun = fun )
+return(group_dots)
+}
+tbb(mtcars , x = carb, y = gear, z = mpg , fun = sum)
+tbb  <- function (data ,z, ..., fun ){
+z <- substitute(z)
+group_dots <- eval(substitute(alist(...)))
+#group_dots <- lazyeval::lazy_dots(..., all_named = TRUE)
+#out <- tbb_ (data, ... = group_dots ,z = z , fun = fun )
+return(group_dots)
+}
+tbb(mtcars , x = carb, y = gear, z = mpg , fun = sum)
+tbb  <- function (data ,z, ..., fun ){
+z <- substitute(z)
+group_dots <- substitute(alist(...))
+#group_dots <- lazyeval::lazy_dots(..., all_named = TRUE)
+#out <- tbb_ (data, ... = group_dots ,z = z , fun = fun )
+return(group_dots)
+}
+tbb(mtcars , x = carb, y = gear, z = mpg , fun = sum)
+tbb  <- function (data ,z, ..., fun ){
+z <- substitute(z)
+group_dots <- substitute(alist(...))
+#group_dots <- lazyeval::lazy_dots(..., all_named = TRUE)
+out <- tbb_ (data, group_dots ,z = z , fun = fun )
+return(out)
+}
+tbb(mtcars , x = carb, y = gear, z = mpg , fun = sum)
+tbb_(mtcars , x = "carb", list(y = "gear", z = "mpg") , fun = sum)
+?group_by_
+tbb_ <- function(data ,z, .dots, fun ){
+stat_dots   <- setNames(
+list(interp( ~fun(z), z = as.name(z))), c("stat")
+)
+#group_dots <- lazyeval::all_dots(..., all_named = TRUE)
+out <- data %>%
+group_by_(.dots = .dots) %>%
+summarise_(.dots = stat_dots)
+return(out)
+}
+tbb_(mtcars , x = "carb", list(y = "gear", z = "mpg") , fun = sum)
+tbb_ <- function(data ,z, dots, fun ){
+stat_dots   <- setNames(
+list(interp( ~fun(z), z = as.name(z))), c("stat")
+)
+#group_dots <- lazyeval::all_dots(..., all_named = TRUE)
+out <- data %>%
+group_by_(.dots = dots) %>%
+summarise_(.dots = stat_dots)
+return(out)
+}
+tbb_(mtcars , x = "carb", alist(y = "gear", z = "mpg") , fun = sum)
+tbb_(mtcars , z = "carb", alist(y = "gear", z = "mpg") , fun = sum)
+tbb_(mtcars , z = "carb", list(y = "gear", z = "mpg") , fun = sum)
+tbb_(mtcars , z = "carb", alist(y = "gear", z = "mpg") , fun = sum)
+tbb_(mtcars , z = "mpg", alist(y = "gear", x = "carb") , fun = sum)
+tbb  <- function (data ,z, ..., fun ){
+z <- substitute(z)
+group_dots <- substitute(alist(...))
+#group_dots <- lazyeval::lazy_dots(..., all_named = TRUE)
+out <- tbb_ (data, group_dots = group_dots ,z = z , fun = fun )
+return(out)
+}
+tbb(mtcars , x = carb, y = gear, z = mpg , fun = sum)
+rm(list = ls())
+tbb_ <- function(data ,z, group_dots, fun ){
+stat_dots   <- setNames(
+list(interp( ~fun(z), z = as.name(z))), c("stat")
+)
+#group_dots <- lazyeval::all_dots(..., all_named = TRUE)
+out <- data %>%
+group_by_(.dots = dots) %>%
+summarise_(.dots = stat_dots)
+return(out)
+}
+#tbb_(mtcars , x = "carb", y = "gear", z = "mpg" , fun = sum)
+tbb_(mtcars , z = "mpg", alist(y = "gear", x = "carb") , fun = sum)
+rm(list = ls())
+tbb_ <- function(data ,z, group_dots, fun ){
+stat_dots   <- setNames(
+list(interp( ~fun(z), z = as.name(z))), c("stat")
+)
+#group_dots <- lazyeval::all_dots(..., all_named = TRUE)
+out <- data %>%
+group_by_(.dots = group_dots) %>%
+summarise_(.dots = stat_dots)
+return(out)
+}
+#tbb_(mtcars , x = "carb", y = "gear", z = "mpg" , fun = sum)
+tbb_(mtcars , z = "mpg", alist(y = "gear", x = "carb") , fun = sum)
+tbb  <- function (data ,z, ..., fun ){
+z <- substitute(z)
+group_dots <- substitute(alist(...))
+#group_dots <- lazyeval::lazy_dots(..., all_named = TRUE)
+out <- tbb_ (data, group_dots = group_dots ,z = z , fun = fun )
+return(out)
+}
+tbb(mtcars , x = carb, y = gear, z = mpg , fun = sum)
+tbb  <- function (data ,z, ..., fun ){
+z <- substitute(z)
+#group_dots <- substitute(alist(...))
+#group_dots <- lazyeval::lazy_dots(..., all_named = TRUE)
+out <- tbb_ (data, group_dots = ... ,z = z , fun = fun )
+return(out)
+}
+tbb(mtcars , x = carb, y = gear, z = mpg , fun = sum)
+tbb  <- function (data ,z, ..., fun ){
+z <- substitute(z)
+group_dots <- substitute(alist(...))
+#group_dots <- lazyeval::lazy_dots(..., all_named = TRUE)
+out <- tbb_ (data, group_dots = group_dots ,z = z , fun = fun )
+return(out)
+}
+tbb(mtcars , x = carb, y = gear, z = mpg , fun = sum)
+tbb  <- function (data ,z, ..., fun ){
+z <- substitute(z)
+#group_dots <- substitute(alist(...))
+group_dots <- lazyeval::lazy_dots(..., all_named = TRUE)
+out <- tbb_ (data, group_dots = group_dots ,z = z , fun = fun )
+return(out)
+}
+tbb(mtcars , x = carb, y = gear, z = mpg , fun = sum)
+tbb  <- function (data ,z, ..., fun ){
+z <- substitute(z)
+#group_dots <- substitute(alist(...))
+group_dots <- lazyeval::lazy_dots(...)
+out <- tbb_ (data, group_dots = group_dots ,z = z , fun = fun )
+return(out)
+}
+tbb(mtcars , x = carb, y = gear, z = mpg , fun = sum)
+tbb(mtcars , y = gear, z = mpg , fun = sum)
+tbb(mtcars , pippo  = carb, z = mpg , fun = sum)
+test <- tbb(mtcars , x = carb, y = gear, z = mpg , fun = sum)
+test
+test_table <- dcast(test , gear~carb, value.var = "stat")
+test
+test <- tbb(mtcars , x = carb, y = gear, z = mpg , fun = sum)
+test_table <- dcast(test , x~y, value.var = "stat")
+test_table
+xtable(test_table)
+fun <- function(data, x , g, f){
+###################################
+#### No extra changes from here ###
+###################################
+## add stat, shape and n()
+dots   <- setNames(list(interp(~f), "f"))
+data %>% group_by_(g) %>% summarise_(.dots = dots)
+}
+head(mtcars)
+fun(mtcars, x = 'mpg', g = 'gear', f = mean)
+fun <- function(data, x , g, f){
+dots   <- setNames(list(interp(~f)), 'f')
+data %>% group_by_(g) %>% summarise_(.dots = dots)
+}
+fun(mtcars, x = 'mpg', g = 'gear', f = mean)
+require(lazyeval)
+fun <- function(data, x , g, f){
+dots   <- setNames(list(interp(~f)), 'f')
+data %>% group_by_(g) %>% summarise_(.dots = dots)
+}
+fun(mtcars, x = 'mpg', g = 'gear', f = mean)
+require(dplyr)
+fun(mtcars, x = 'mpg', g = 'gear', f = mean)
+fun <- function(data, x , g, f){
+dots   <- setNames(list(interp(~f)), c('f'))
+data %>% group_by_(g) %>% summarise_(.dots = dots)
+}
+fun(mtcars, x = 'mpg', g = 'gear', f = mean)
+fun <- function(data, x , g, f){
+dots   <- setNames(list(interp(~f(x))), as.name(x))
+data %>% group_by_(g) %>% summarise_(.dots = dots)
+}
+fun(mtcars, x = 'mpg', g = 'gear', f = mean)
+fun <- function(data, x , g, f){
+dots   <- setNames(list(interp(~f(x)), x = as.name(x)), 'f')
+data %>% group_by_(g) %>% summarise_(.dots = dots)
+}
+fun(mtcars, x = 'mpg', g = 'gear', f = mean)
+f
+fun <- function(data, x , g, f){
+dots   <- setNames(
+list(interp(~f())), c("xxx"))
+data %>% group_by_(g) %>% summarise_(.dots = dots)
+}
+fun(mtcars, x = 'mpg', g = 'gear', f = mean)
+fun <- function(data, x , g, f){
+dots   <- setNames(
+stat_dots   <- setNames(
+list(interp(~n()),
+interp( ~f(x), x = as.name(x))),
+c("n", "stat")
+)
+data %>% group_by_(g) %>% summarise_(.dots = dots)
+}
+fun <- function(data, x , g, f){
+dots   <- setNames(list(
+interp(~n()),
+interp( ~f(x), x = as.name(x))),
+c("n", "stat")
+)
+data %>% group_by_(g) %>% summarise_(.dots = dots)
+}
+fun(mtcars, x = 'mpg', g = 'gear', f = mean)
+fun(mtcars, x = 'mpg', g = 'gear', f = sum)
+rm(list = ls())
+require(lazyeval)
+require(dplyr)
+fun_ <- function(data, x , g, f){
+dots   <- setNames(list(
+interp(~n()),
+interp( ~f(x), x = as.name(x))),
+c("n", "stat")
+)
+data %>% group_by_(g) %>% summarise_(.dots = dots)
+}
+fun(mtcars, x = 'mpg', g = 'gear', f = mean)
+fun(mtcars, x = 'mpg', g = 'gear', f = sum)
+fun <- function(data, x , g, f){
+x <- sunstitute(x)
+g <- sunstitute(g)
+fun_ (data, x , g, f)
+}
+fun(mtcars, x = mpg, g = gear, f = mean)
+rm(list = ls())
+require(lazyeval)
+require(dplyr)
+fun_ <- function(data, x , g, f){
+dots   <- setNames(list(
+interp(~n()),
+interp( ~f(x), x = as.name(x))),
+c("n", "stat")
+)
+data %>% group_by_(g) %>% summarise_(.dots = dots)
+}
+fun(mtcars, x = 'mpg', g = 'gear', f = mean)
+fun(mtcars, x = 'mpg', g = 'gear', f = sum)
+fun <- function(data, x , g, f){
+x <- substitute(x)
+g <- substitute(g)
+fun_ (data, x , g, f)
+}
+fun(mtcars, x = mpg, g = gear, f = mean)
+rm(list = ls())
+require(lazyeval)
+require(dplyr)
+fun_ <- function(data, x , g, f){
+dots   <- setNames(list(
+interp(~n()),
+interp( ~f(x), x = as.name(x))),
+c("n", "stat")
+)
+data %>% group_by_(g) %>% summarise_(.dots = dots)
+}
+fun_(mtcars, x = 'mpg', g = 'gear', f = mean)
+fun_(mtcars, x = 'mpg', g = 'gear', f = sum)
+fun <- function(data, x , g, f){
+x <- substitute(x)
+g <- substitute(g)
+fun_ (data, x , g, f)
+}
+fun(mtcars, x = mpg, g = gear, f = mean)
+vignette('nse')

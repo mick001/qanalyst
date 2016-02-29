@@ -1,0 +1,18 @@
+{
+    "contents" : "rm(list = ls())\nrequire(lazyeval)\nrequire(dplyr)\nfun_ <- function(data, x , g, f){\n  \n  dots   <- setNames(list(\n            interp(~n()),\n            interp( ~f(x), x = as.name(x))),\n      c(\"n\", \"stat\")\n    )\n    \n  data %>% group_by_(g) %>% summarise_(.dots = dots)\n}\n\nfun_(mtcars, x = 'mpg', g = 'gear', f = mean)\nfun_(mtcars, x = 'mpg', g = 'gear', f = sum)\n\n\nfun <- function(data, x , g, f){\n  x <- substitute(x)\n  g <- substitute(g)\n  fun_ (data, x , g, f)\n}    \n\nfun(mtcars, x = mpg, g = gear, f = mean)\n\n\n\n",
+    "created" : 1452174863936.000,
+    "dirty" : true,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "650884903",
+    "id" : "753D96E2",
+    "lastKnownWriteTime" : 62466816,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "type" : "r_source"
+}

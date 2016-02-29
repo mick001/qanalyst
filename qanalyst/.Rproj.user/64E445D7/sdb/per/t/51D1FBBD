@@ -1,0 +1,17 @@
+{
+    "contents" : "#######################################################\n#' Generate a xbar R object\n#' @param data\n#' @param x\n#' @param g\n#' @importFrom lazyeval interp\n#' @importFrom dplyr select_  group_by_ mutate_ left_join summarise_  %>%\n#' @return An object of class xbar-R\n#' @examples\n# #' data(ingots)\n# #' xbar_r (ingots, kg, group)\n#' @export\nxbar_r  <- function (data, x, g){\n  x <- substitute(x)\n  g <-substitute(g)\n  out <- xbar_r_ (data, x , g)\n  return(out)\n}\n#########################################################\n#' Generate a xbar-s object\n#' @importFrom lazyeval interp\n#' @importFrom dplyr select_  group_by_ mutate_ left_join summarise_  %>%\n#' @return An object of class xbar-R\n#' @examples\n#' data(ingots)\n#' xbar_s (production, x = dim_mm, g = batch)\n#' @export\nxbar_s  <- function (data, x, g){\n  x <- substitute(x)\n  g <-substitute(g)\n  out <- xbar_s_ (data, x , g)\n  return(out)\n}\n#########################################################\n#' Generate a R object\n#' @importFrom lazyeval interp\n#' @importFrom dplyr select_  group_by_ mutate_ left_join summarise_  %>%\n#' @return An object of class xbar-R\n#' @examples\n#' data(ingots)\n#' r(ingots, kg, group)\n#' @export\nr  <- function (data, x, g){\n  x <- substitute(x)\n  g <-substitute(g)\n  out <- r_ (data, x , g)\n  return(out)\n}\n\n#########################################################\n#' Generate a S object\n#' @importFrom lazyeval interp\n#' @importFrom dplyr select_  group_by_ mutate_ left_join summarise_  %>%\n#' @return An object of class xbar-R\n#' @examples\n#' data(ingots)\n#' s (production, x = dim_mm, g = batch)\n#' @export\ns  <- function (data, x, g){\n  x <- substitute(x)\n  g <-substitute(g)\n  out <- s_ (data, x , g)\n  return(out)\n}\n",
+    "created" : 1452174558506.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1041469266",
+    "id" : "51D1FBBD",
+    "lastKnownWriteTime" : 1443471260,
+    "path" : "~/gdrive/quantide/int/qanalyst/R/nse.R",
+    "project_path" : "R/nse.R",
+    "properties" : {
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "type" : "r_source"
+}

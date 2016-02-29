@@ -1,0 +1,16 @@
+Package: qAnalyst
+Type: Package
+Title: Quality Statitics Tools
+Version: 0.1
+Date: 2015-08-21
+Author: Andrea Spano <andrea@quantide.com>
+Maintainer: Andrea Spano <andrea@quantide.com>
+Description: This package provides some functions to generate Shewhart control charts.
+Imports:
+    dplyr (>= 0.3.0.2),
+    lazyeval,
+    ggplot2,
+    chartconstants
+License: GPL
+LazyData: TRUE
+RoxygenNote: 5.0.1
