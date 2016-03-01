@@ -179,3 +179,68 @@ i_chart  <- function (data, x, mr_step){
     out <- i_chart_ (data, x , mr_step)
     return(out)
 }
+
+################################################################################
+#' NP chart
+#'
+#' Generate a NP control chart
+#'
+#' @param data a dataframe object
+#' @param x variable to be used
+#' @param g size of each sample
+#' @importFrom lazyeval interp
+#' @importFrom dplyr select_ mutate_ summarise_ %>% mutate
+#' @return An object of class np_chart
+#' @examples
+#' data(test_np)
+#' np_chart(test_np, non_conforming_cans, sample_size)
+#' @export
+#'
+np_chart  <- function (data, x, g){
+    x <- substitute(x)
+    g <- substitute(g)
+    out <- np_chart_ (data, x , g)
+    return(out)
+}
+
+################################################################################
+#' U chart
+#'
+#' Generate a U control chart
+#'
+#' @param data a dataframe object
+#' @param x variable to be used
+#' @param g number of inspection units per sample (sample size within each inspection unit is assumed constant)
+#' @importFrom lazyeval interp
+#' @importFrom dplyr select_ mutate_ summarise_ %>% mutate
+#' @return An object of class u_chart
+#' @examples
+#' data(test_u)
+#' #u_chart(test_u, non_conformities, number_of_inspection_units)
+#' @export
+#'
+u_chart  <- function (data, x, g){
+    x <- substitute(x)
+    g <- substitute(g)
+    out <- u_chart_ (data, x , g)
+    return(out)
+}
+
+################################################################################
+#' set_param_generic
+#'
+#' Set user defined parameters in control chart object
+#'
+#' @param data an object of class spc
+#' @param new_param a single value (constant) or a numeric vector
+#' @param replace_param parameter to be replaced (center, lcl or ucl)
+#' @importFrom lazyeval interp
+#' @importFrom dplyr %>% select_ mutate_ rename_
+#' @return An object of class spc
+#' @export
+#'
+set_param_generic <- function(data, new_param, replace_param){
+    replace_param <- substitute(replace_param)
+    out <- set_param_generic_(data, new_param, replace_param)
+    return(out)
+}

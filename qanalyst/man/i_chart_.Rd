@@ -19,7 +19,4 @@ An object of class i_chart
 \description{
 Generate a I control chart
 }
-\examples{
-
-}
 

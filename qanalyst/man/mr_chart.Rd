@@ -23,6 +23,5 @@ Generate an MR control chart
 # Example with moving range of 2 (minumum moving range window size)
 data(test_i_mr)
 mr_chart(test_i_mr, cost, mr_step = 2)
-
 }
 

@@ -73,3 +73,21 @@ test_i_mr <- data.frame(weeks = 1:20,
                            295,293,306,301,304))
 use_data(test_i_mr)
 rm(test_i_mr)
+
+################################################################################
+test_np <- data.frame(sample_size = rep(50,30),
+                      non_conforming_cans = c(12,15,8,10,4,7,
+                                            16,9,14,10,5,6,
+                                            17,12,22,8,10,5,
+                                            13,11,20,18,24,
+                                            15,9,12,7,13,9,6))
+
+use_data(test_np)
+rm(test_np)
+
+################################################################################
+test_u <- data.frame(total_number_nonconformities = c(14,12,20,11,7,10,21,16,19,23),
+                     number_of_inspection_units = c(10,8,13,10,9.5,10,12,10.5,12,12.5))
+
+use_data(test_u)
+rm(test_u)

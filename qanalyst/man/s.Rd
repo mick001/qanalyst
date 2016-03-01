@@ -21,6 +21,6 @@ Generate a S object
 }
 \examples{
 data(ingots)
-s (production, x = dim_mm, g = batch)
+s(production, x = dim_mm, g = batch)
 }
 

@@ -1,53 +1,24 @@
-# Convertirli tutti in metodi S3
 # Aggiungere possibilità di modificare parametri delle altre carte (c,xbar-s,xbar-r,I,mr, ecc..)
 
 ################################################################################
-#' set_center
+#' set_param_generic
 #'
-#' Set center parameters in control chart object
+#' Set user defined parameters in control chart object
 #'
 #' @param data an object of class spc
-#' @param new_center a single value (constant center) or a numeric vector
-#' @importFrom dplyr %>% mutate
+#' @param new_param a single value (constant) or a numeric vector
+#' @param replace_param parameter to be replaced (center, lcl or ucl)
+#' @importFrom lazyeval interp
+#' @importFrom dplyr %>% select_ mutate_ rename_
 #' @return An object of class spc
 #' @export
 #'
-set_center <- function(data, new_center){
-    stat_data <- data %>% mutate(center = new_center)
-    class(stat_data) <- class(data)
-    return(stat_data)
-}
+set_param_generic_ <- function(data, new_param, replace_param){
 
-################################################################################
-#' set_lcl
-#'
-#' Set lcl parameters in control chart object
-#'
-#' @param data an object of class spc
-#' @param new_lcl a single value (constant lcl) or a numeric vector
-#' @importFrom dplyr %>% mutate
-#' @return An object of class spc
-#' @export
-#'
-set_lcl <- function(data, new_lcl){
-    stat_data <- data %>% mutate(lcl = new_lcl)
-    class(stat_data) <- class(data)
-    return(stat_data)
-}
-
-################################################################################
-#' set_ucl
-#'
-#' Set ucl parameters in control chart object
-#'
-#' @param data an object of class spc
-#' @param new_ucl a single value (constant ucl) or a numeric vector
-#' @importFrom dplyr %>% mutate
-#' @return An object of class spc
-#' @export
-#'
-set_ucl <- function(data, new_ucl){
-    stat_data <- data %>% mutate(ucl = new_ucl)
+    stat_data <- data %>% select_( interp(~ -x, x = as.name(replace_param)))
+    stat_data <- stat_data %>% mutate_(new_param_ = new_param )
+    new <- as.character(replace_param)
+    stat_data <- rename_(stat_data, .dots=setNames(list("new_param_"), new))
     class(stat_data) <- class(data)
     return(stat_data)
 }

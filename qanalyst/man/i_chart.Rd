@@ -21,7 +21,6 @@ Generate a I control chart
 }
 \examples{
 data(test_i_mr)
-i_chart(test_i_mr,cost,2)
-
+i_chart(test_i_mr, cost, 2)
 }
 

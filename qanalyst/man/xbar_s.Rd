@@ -21,6 +21,6 @@ Generate a xbar-s object
 }
 \examples{
 data(ingots)
-xbar_s (production, x = dim_mm, g = batch)
+xbar_s(production, x = dim_mm, g = batch)
 }
 

@@ -302,8 +302,8 @@ p_chart_ <- function(data, x, g){
 
     ucl <- "center + 3 * sqrt(center*(1 - center) / n)"
     lcl <- "center - 3 * sqrt(center*(1 - center) / n)"
-    center_fun <- function(x,g){sum(x)/sum(g)}
-    stat_fun <- function(x,g){x/g}
+    center_fun <- function(x, g){sum(x) / sum(g)}
+    stat_fun <- function(x, g){x / g}
     class <- "p_chart"
 
     ###################################
@@ -315,8 +315,8 @@ p_chart_ <- function(data, x, g){
         list(
             group = interp( ~row_number() ),
             n = g,
-            interp( ~stat_fun(x,y), x = as.name(x), y = as.name(g) ),
-            interp( ~center_fun(x,y), x = as.name(x), y = as.name(g)) ),
+            interp( ~stat_fun(x, y), x = as.name(x), y = as.name(g) ),
+            interp( ~center_fun(x, y), x = as.name(x), y = as.name(g)) ),
         c("group", "n", "stat", "center")
     )
 
@@ -372,7 +372,7 @@ mr_chart_ <- function(data,x,mr_step){
         list(
             group = interp( ~row_number() ),
             1,
-            interp( ~stat_fun(x,step), x = as.name(x), step = mr_step ),
+            interp( ~stat_fun(x, step), x = as.name(x), step = mr_step ),
             interp( ~center_fun(stat)),
             interp( ~constant(mr_step, D4)),
             interp( ~constant(mr_step, D3))),
@@ -412,7 +412,7 @@ i_chart_ <- function(data, x, mr_step){
 
     lcl <- "center - 3 * mr / d2"
     ucl <- "center + 3 * mr / d2"
-    mr_fun <- function(x,step){mean(abs(diff(x,step-1)))}
+    mr_fun <- function(x, step){mean(abs(diff(x, step - 1)))}
     stat_fun <- identity
     center_fun <- mean
     class <- "i_chart"
@@ -428,9 +428,119 @@ i_chart_ <- function(data, x, mr_step){
             1,
             interp( ~stat_fun(x), x = as.name(x)),
             interp( ~center_fun(x), x = as.name(x)),
-            interp( ~mr_fun(x,step), x = as.name(x), step = mr_step),
+            interp( ~mr_fun(x, step), x = as.name(x), step = mr_step),
             interp( ~constant(mr_step, d2)) ),
         c("group", "n", "stat", "center","mr","d2")
+    )
+
+    stat_data <- data %>% mutate_(.dots = center_dots)
+
+    # Add lcl and ucl
+    stat_data <- stat_data %>% mutate_(lcl = lcl, ucl = ucl)
+
+    # Filter
+    stat_data <- stat_data %>% select_("group","n","stat","center","lcl","ucl")
+
+    # Set class
+    attr(stat_data, "class") <- c(class , "spc" , "tbl_df", "tbl", "data.frame")
+
+    # set attributes
+    attr(stat_data, "x_lab") <- x
+
+    #return
+    return(stat_data)
+}
+
+################################################################################
+#' NP chart
+#'
+#' Generate a NP control chart
+#'
+#' @param data a dataframe object
+#' @param x variable to be used
+#' @param g size of each sample
+#' @importFrom lazyeval interp
+#' @importFrom dplyr select mutate_ summarise_ %>% mutate
+#' @return An object of class np_chart
+#' @export
+#'
+np_chart_ <- function(data, x, g){
+
+    # Note: center = np
+    ucl <- "center + 3 * sqrt(center*(1 - center / n))"
+    lcl <- "center - 3 * sqrt(center*(1 - center / n))"
+    center_fun <- function(x, g){g * sum(x) / sum(g)}
+    stat_fun <- identity
+    class <- "np_chart"
+
+    ###################################
+    #### No extra changes from here ###
+    ###################################
+
+    ## add "group", "n", "stat", "center"
+    center_dots <- setNames(
+        list(
+            group = interp( ~row_number() ),
+            n = g,
+            interp( ~stat_fun(x), x = as.name(x) ),
+            interp( ~center_fun(x, y), x = as.name(x), y = as.name(g)) ),
+        c("group", "n", "stat", "center")
+    )
+
+    stat_data <- data %>% mutate_(.dots = center_dots)
+
+    # Add lcl and ucl
+    stat_data <- stat_data %>% mutate_(lcl = lcl, ucl = ucl)
+
+    # Set to 0 negative lcl values (in case some are < 0)############################### Va bene???
+    stat_data <- stat_data %>% mutate(lcl = replace(lcl, which(lcl < 0), 0))
+
+    # Filter
+    stat_data <- stat_data %>% select_("group","n","stat","center","lcl","ucl")
+
+    # Set class
+    attr(stat_data, "class") <- c(class , "spc" , "tbl_df", "tbl", "data.frame")
+
+    # set attributes
+    attr(stat_data, "x_lab") <- x
+
+    #return
+    return(stat_data)
+}
+
+################################################################################
+#' U chart
+#'
+#' Generate a U control chart
+#'
+#' @param data a dataframe object
+#' @param x variable to be used
+#' @param g number of inspection units per sample (sample size within each inspection unit is assumed constant)
+#' @importFrom lazyeval interp
+#' @importFrom dplyr select mutate_ summarise_ %>% mutate
+#' @return An object of class u_chart
+#' @export
+#'
+u_chart_ <- function(data, x, g){
+
+    ucl <- "center + 3 * sqrt(center / n)"
+    lcl <- "center - 3 * sqrt(center / n)"
+    center_fun <- function(x, g){sum(x) / sum(g)}
+    stat_fun <- function(x, g){x / g}
+    class <- "u_chart"
+
+    ###################################
+    #### No extra changes from here ###
+    ###################################
+
+    ## add "group", "n", "stat", "center"
+    center_dots <- setNames(
+        list(
+            group = interp( ~row_number() ),
+            n = g,
+            interp( ~stat_fun(x, y), x = as.name(x), y = as.name(g) ),
+            interp( ~center_fun(x, y), x = as.name(x), y = as.name(g)) ),
+        c("group", "n", "stat", "center")
     )
 
     stat_data <- data %>% mutate_(.dots = center_dots)

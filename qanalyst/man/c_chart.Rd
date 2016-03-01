@@ -19,7 +19,6 @@ Generate a C control chart
 }
 \examples{
 data(test_c)
-c_chart(test_c,defect)
-
+c_chart(test_c, defect)
 }
 
