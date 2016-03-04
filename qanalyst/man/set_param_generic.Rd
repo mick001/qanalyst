@@ -9,14 +9,14 @@ set_param_generic(data, new_param, replace_param)
 \arguments{
 \item{data}{an object of class spc}
 
-\item{new_param}{a single value (constant center) or a numeric vector}
+\item{new_param}{a single value (constant) or a numeric vector}
 
-\item{replace_param}{parameter to be replaced}
+\item{replace_param}{parameter to be replaced (center, lcl or ucl)}
 }
 \value{
 An object of class spc
 }
 \description{
-Set parameters in control chart object
+Set user defined parameters in control chart object
 }
 
