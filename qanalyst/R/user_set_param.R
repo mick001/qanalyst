@@ -1,25 +1,32 @@
-# Aggiungere possibilità di modificare parametri delle altre carte (c,xbar-s,xbar-r,I,mr, ecc..)
-
 ################################################################################
 #' set_param_generic
 #'
-#' Set user defined parameters in control chart object
+#' Set user defined parameters in control chart object. Example: set user defined
+#' UCL, LCL, center or even stats.
 #'
 #' @param data an object of class spc
-#' @param new_param a single value (constant) or a numeric vector
-#' @param replace_param parameter to be replaced (center, lcl or ucl)
+#' @param param parameter to be replaced (center, lcl, ucl or stat)
+#' @param value a single numeric value (constant)
 #' @importFrom lazyeval interp
-#' @importFrom dplyr %>% select_ mutate_ rename_
+#' @importFrom dplyr mutate
 #' @return An object of class spc
 #' @export
 #'
-set_param_generic_ <- function(data, new_param, replace_param){
+set_param_generic_ <- function(data, param, value){
 
-    stat_data <- data %>% select_( interp(~ -x, x = as.name(replace_param)))
-    stat_data <- stat_data %>% mutate_(new_param_ = new_param )
-    new <- as.character(replace_param)
-    stat_data <- rename_(stat_data, .dots=setNames(list("new_param_"), new))
-    class(stat_data) <- class(data)
+    # Keep class
+    stat_data_class <- class(data)
+
+    # Set names
+    dot_dots <- setNames(list(value), c(param) )
+
+    # (Mutate) Edit column
+    stat_data <- data %>% mutate_(.dots = dot_dots)
+
+    # Set class
+    class(stat_data) <- stat_data_class
+
+    # Return
     return(stat_data)
 }
 

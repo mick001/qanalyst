@@ -21,6 +21,6 @@ Generate a U control chart
 }
 \examples{
 data(test_u)
-#u_chart(test_u, non_conformities, number_of_inspection_units)
+u_chart(test_u, total_number_nonconformities, number_of_inspection_units)
 }
 

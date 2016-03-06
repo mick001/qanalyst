@@ -4,19 +4,25 @@
 \alias{set_param_generic}
 \title{set_param_generic}
 \usage{
-set_param_generic(data, new_param, replace_param)
+set_param_generic(data, param, value)
 }
 \arguments{
 \item{data}{an object of class spc}
 
-\item{new_param}{a single value (constant) or a numeric vector}
+\item{param}{parameter to be replaced (center, lcl, ucl or stat)}
 
-\item{replace_param}{parameter to be replaced (center, lcl or ucl)}
+\item{value}{a single numeric value (constant)}
 }
 \value{
 An object of class spc
 }
 \description{
-Set user defined parameters in control chart object
+Set user defined parameters in control chart (SPC) object. For instance: set user defined
+UCL, LCL, center or even stats.
+}
+\examples{
+ data("test_p")
+ p <- p_chart(test_p,defect,sample_size)
+ set_param_generic(p,10,lcl)
 }
 

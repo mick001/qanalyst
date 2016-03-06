@@ -216,7 +216,7 @@ np_chart  <- function (data, x, g){
 #' @return An object of class u_chart
 #' @examples
 #' data(test_u)
-#' #u_chart(test_u, non_conformities, number_of_inspection_units)
+#' u_chart(test_u, total_number_nonconformities, number_of_inspection_units)
 #' @export
 #'
 u_chart  <- function (data, x, g){
@@ -229,18 +229,23 @@ u_chart  <- function (data, x, g){
 ################################################################################
 #' set_param_generic
 #'
-#' Set user defined parameters in control chart object
+#' Set user defined parameters in control chart (SPC) object. For instance: set user defined
+#' UCL, LCL, center or even stats.
 #'
 #' @param data an object of class spc
-#' @param new_param a single value (constant) or a numeric vector
-#' @param replace_param parameter to be replaced (center, lcl or ucl)
+#' @param param parameter to be replaced (center, lcl, ucl or stat)
+#' @param value a single numeric value (constant)
 #' @importFrom lazyeval interp
-#' @importFrom dplyr %>% select_ mutate_ rename_
+#' @importFrom dplyr mutate
 #' @return An object of class spc
+#' @examples
+#'  data("test_p")
+#'  p <- p_chart(test_p,defect,sample_size)
+#'  set_param_generic(p,10,lcl)
 #' @export
 #'
-set_param_generic <- function(data, new_param, replace_param){
-    replace_param <- substitute(replace_param)
-    out <- set_param_generic_(data, new_param, replace_param)
+set_param_generic <- function(data, param, value){
+    param <- substitute(param)
+    out <- set_param_generic_(data, value, param)
     return(out)
 }
