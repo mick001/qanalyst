@@ -11,7 +11,7 @@
 diff_range <- function(x, ...) {diff(range(x, ...))}
 
 
-#' Utility function
+#' Utility factory function. Returns fun if k is null, else returns f(x){k}
 #'
 #' @param fun stat_fun or shape_fun
 #' @param k control chart set by the user or NULL
