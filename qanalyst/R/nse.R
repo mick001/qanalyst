@@ -13,10 +13,10 @@
 #' xbar_r (ingots, kg, group)
 #' @export
 #'
-xbar_r  <- function (data, x, g){
+xbar_r  <- function (data, x, g, mu=NULL, sigma=NULL){
     x <- substitute(x)
     g <-substitute(g)
-    out <- xbar_r_ (data, x , g)
+    out <- xbar_r_ (data, x , g, mu=mu, sigma=sigma)
     return(out)
 }
 
@@ -246,6 +246,6 @@ u_chart  <- function (data, x, g){
 #'
 set_param_generic <- function(data, param, value){
     param <- substitute(param)
-    out <- set_param_generic_(data, value, param)
+    out <- set_param_generic_(data, param, value)
     return(out)
 }

@@ -4,7 +4,7 @@
 \alias{xbar_r}
 \title{Generate a xbar R object}
 \usage{
-xbar_r(data, x, g)
+xbar_r(data, x, g, mu = NULL, sigma = NULL)
 }
 \arguments{
 \item{data}{a dataframe object}

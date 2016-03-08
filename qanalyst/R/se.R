@@ -11,19 +11,29 @@
 #' @return An object of class xbar-r
 #' @export
 #'
-xbar_r_ <- function(data, x , g){
+xbar_r_ <- function(data, x , g, mu=NULL, sigma=NULL){
 
     # lcl ucl formulas and constants name
     lcl <- "center - lcl_const * avg_shape"
     ucl <- "center + ucl_const * avg_shape"
-    lcl_c <- "A2"
+    lcl_c <- "A2"                            # Constants used when standards are not given
     ucl_c <- "A2"
+    lcl_c_sg <- "A"                          # Constatnts used when standards are given
+    ucl_c_sg <- "A"
 
     # functions: stat, shape, center, avg_shape
     stat_fun <- mean
     shape_fun <- diff_range
     center_fun <- mean
     avg_shape_fun <- mean
+
+    #----------------------------------------
+    # Check if standards (mu and sigma) are given
+    center_fun <- set_function(fun = center_fun, k = mu)
+    shape_fun <- set_function(fun = shape_fun, k = sigma)
+    lcl_c <- set_constant(lcl_c, lcl_c_sg, k=sigma)
+    ucl_c <- set_constant(lcl_c, lcl_c_sg, k=sigma)
+    #----------------------------------------
 
     # Class
     class <- "xbar-r"

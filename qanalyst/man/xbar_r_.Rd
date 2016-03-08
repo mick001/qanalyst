@@ -5,7 +5,7 @@
 \title{xbar_r_
 SE version of xbar-R}
 \usage{
-xbar_r_(data, x, g)
+xbar_r_(data, x, g, mu = NULL, sigma = NULL)
 }
 \arguments{
 \item{data}{a dataframe object}
