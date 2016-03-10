@@ -18,4 +18,8 @@ set_function(fun, k = NULL)
 \description{
 Utility factory function. Returns fun if k is null, else returns f(x){k}
 }
+\examples{
+set_function(mean)         # Returns mean
+set_function(mean, k = 10) # Returns function(x, ...){ 10 }
+}
 

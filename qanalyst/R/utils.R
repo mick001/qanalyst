@@ -18,9 +18,12 @@ diff_range <- function(x, ...) {diff(range(x, ...))}
 #' @param n sample size
 #' @param const control chart constant, if required
 #' @importFrom chartconstants constant
+#' @examples
+#' set_function(mean)         # Returns mean
+#' set_function(mean, k = 10) # Returns function(x, ...){ 10 }
 #' @export
 #'
-set_function <- function(fun, k=NULL){
+set_function <- function(fun, k = NULL){
     if(is.null(k)){
         stat_fun <- fun
     } else {
