@@ -4,7 +4,7 @@
 \alias{xbar_s_}
 \title{SE version of xbar-S}
 \usage{
-xbar_s_(data, x, g)
+xbar_s_(data, x, g, mu = NULL, sigma = NULL)
 }
 \arguments{
 \item{data}{a dataframe object}
@@ -12,6 +12,10 @@ xbar_s_(data, x, g)
 \item{x}{variable to be used}
 
 \item{g}{group variable}
+
+\item{mu}{average value of x variable (if known)}
+
+\item{sigma}{standard deviation of x variable (if known)}
 }
 \value{
 An object of class xbar-s

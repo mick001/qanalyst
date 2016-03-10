@@ -4,7 +4,7 @@
 \alias{s}
 \title{Generate a S object}
 \usage{
-s(data, x, g)
+s(data, x, g, sigma = NULL)
 }
 \arguments{
 \item{data}{a dataframe object}
@@ -12,6 +12,8 @@ s(data, x, g)
 \item{x}{variable to be used}
 
 \item{g}{group variable}
+
+\item{sigma}{standard deviation of x variable (if known)}
 }
 \value{
 An object of class s
@@ -22,5 +24,6 @@ Generate a S object
 \examples{
 data(ingots)
 s(production, x = dim_mm, g = batch)
+s(production, x = dim_mm, g = batch, sigma=2)
 }
 

@@ -4,14 +4,14 @@
 \alias{mr_chart}
 \title{MR chart}
 \usage{
-mr_chart(data, x, mr_step)
+mr_chart(data, x, g)
 }
 \arguments{
 \item{data}{a dataframe object}
 
 \item{x}{variable to be used}
 
-\item{mr_step}{step of the moving range}
+\item{g}{step of the moving range}
 }
 \value{
 An object of class mr_chart
@@ -22,6 +22,6 @@ Generate an MR control chart
 \examples{
 # Example with moving range of 2 (minumum moving range window size)
 data(test_i_mr)
-mr_chart(test_i_mr, cost, mr_step = 2)
+mr_chart(test_i_mr, cost, g = 2)
 }
 

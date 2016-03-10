@@ -4,7 +4,7 @@
 \alias{r}
 \title{Generate a R object}
 \usage{
-r(data, x, g)
+r(data, x, g, sigma = NULL)
 }
 \arguments{
 \item{data}{a dataframe object}
@@ -12,6 +12,8 @@ r(data, x, g)
 \item{x}{variable to be used}
 
 \item{g}{group variable}
+
+\item{sigma}{standard deviation of variable x (if known)}
 }
 \value{
 An object of class xbar-R
@@ -22,5 +24,6 @@ Generate a R object
 \examples{
 data(ingots)
 r(ingots, kg, group)
+r(ingots, kg, group, sigma=0.05)
 }
 

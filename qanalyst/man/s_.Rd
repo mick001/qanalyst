@@ -4,7 +4,7 @@
 \alias{s_}
 \title{SE version of s}
 \usage{
-s_(data, x, g)
+s_(data, x, g, sigma)
 }
 \arguments{
 \item{data}{a dataframe object}
@@ -12,6 +12,8 @@ s_(data, x, g)
 \item{x}{variable to be used}
 
 \item{g}{group variable}
+
+\item{sigma}{standard deviation of x variable (if known)}
 }
 \value{
 An object of class r

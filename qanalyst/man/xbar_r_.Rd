@@ -13,6 +13,10 @@ xbar_r_(data, x, g, mu = NULL, sigma = NULL)
 \item{x}{variable to be used}
 
 \item{g}{group variable}
+
+\item{mu}{average value of x variable (if known)}
+
+\item{sigma}{standard deviation of x variable (if known)}
 }
 \value{
 An object of class xbar-r

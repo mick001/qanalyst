@@ -12,6 +12,10 @@ xbar_r(data, x, g, mu = NULL, sigma = NULL)
 \item{x}{variable to be used}
 
 \item{g}{group variable}
+
+\item{mu}{average value of x variable (if known)}
+
+\item{sigma}{standard deviation of x variable (if known)}
 }
 \value{
 An object of class xbar-R
@@ -22,5 +26,6 @@ Generate a xbar R object
 \examples{
 data(ingots)
 xbar_r (ingots, kg, group)
+xbar_r(ingots, kg, group, mu=1, sigma=0.01)
 }
 

@@ -4,7 +4,7 @@
 \alias{xbar_s}
 \title{Generate a xbar-s object}
 \usage{
-xbar_s(data, x, g)
+xbar_s(data, x, g, mu = NULL, sigma = NULL)
 }
 \arguments{
 \item{data}{a dataframe object}
@@ -12,6 +12,10 @@ xbar_s(data, x, g)
 \item{x}{variable to be used}
 
 \item{g}{group variable}
+
+\item{mu}{average value of x variable (if known)}
+
+\item{sigma}{standard deviation of x variable (if known)}
 }
 \value{
 An object of class xbar-R
@@ -22,5 +26,6 @@ Generate a xbar-s object
 \examples{
 data(ingots)
 xbar_s(production, x = dim_mm, g = batch)
+xbar_s(production, dim_mm, batch, mu = 10, sigma = 1)
 }
 

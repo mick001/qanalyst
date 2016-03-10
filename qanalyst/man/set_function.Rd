@@ -10,6 +10,10 @@ set_function(fun, k = NULL)
 \item{fun}{stat_fun or shape_fun}
 
 \item{k}{control chart parameter (ex: mu or sigma) set by the user or NULL}
+
+\item{n}{sample size}
+
+\item{const}{control chart constant, if required}
 }
 \description{
 Utility factory function. Returns fun if k is null, else returns f(x){k}

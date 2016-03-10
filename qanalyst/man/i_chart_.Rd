@@ -4,14 +4,14 @@
 \alias{i_chart_}
 \title{I chart}
 \usage{
-i_chart_(data, x, mr_step)
+i_chart_(data, x, g)
 }
 \arguments{
 \item{data}{a dataframe object}
 
 \item{x}{variable to be used}
 
-\item{mr_step}{moving range step}
+\item{g}{moving range step}
 }
 \value{
 An object of class i_chart

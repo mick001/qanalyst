@@ -5,6 +5,8 @@
 #' @param data a dataframe object
 #' @param x variable to be used
 #' @param g group variable
+#' @param mu average value of x variable (if known)
+#' @param sigma standard deviation of x variable (if known)
 #' @importFrom lazyeval interp
 #' @importFrom dplyr select_  group_by_ mutate_ left_join summarise_  %>%
 #' @importFrom chartconstants constant
@@ -16,14 +18,12 @@ xbar_r_ <- function(data, x , g, mu=NULL, sigma=NULL){
     # lcl ucl formulas and constants name
     lcl <- "center - lcl_const * avg_shape"
     ucl <- "center + ucl_const * avg_shape"
-    lcl_c <- "A2"                            # Constants used when standards are not given
-    ucl_c <- "A2"
-    lcl_c_sg <- "A"                          # Constatnts used when standards are given
-    ucl_c_sg <- "A"
+    lcl_c <- ifelse(is.null(sigma), "A2", "A")
+    ucl_c <- ifelse(is.null(sigma), "A2", "A")
 
     # functions: stat, shape, center, avg_shape
-    stat_fun <- mean
-    shape_fun <- diff_range
+    stat_fun <- function(x, ...) {mean(x)}
+    shape_fun <- function(x, ...) {diff_range(x)}
     center_fun <- mean
     avg_shape_fun <- mean
 
@@ -31,24 +31,12 @@ xbar_r_ <- function(data, x , g, mu=NULL, sigma=NULL){
     # Check if standards (mu and sigma) are given
     center_fun <- set_function(fun = center_fun, k = mu)
     shape_fun <- set_function(fun = shape_fun, k = sigma)
-    lcl_c <- set_constant(lcl_c, lcl_c_sg, k=sigma)
-    ucl_c <- set_constant(lcl_c, lcl_c_sg, k=sigma)
-    #----------------------------------------
 
     # Class
     class <- "xbar-r"
 
     n_min <- 2
     n_max <- 10
-
-    # Formulas
-    n <- interp(~n())
-    stat_formula <- interp( ~stat_fun(x), x = as.name(x))
-    shape_formula <- interp( ~shape_fun(x), x = as.name(x))
-    lcl_const_formula <- interp( ~constant(n, lcl_c))
-    ucl_const_formula <- interp( ~constant(n, ucl_c))
-    center_formula <- interp( ~center_fun(stat))
-    avg_shape_formula <- interp( ~avg_shape_fun(shape))
 
     #check that n > nmin & n <= n_max
     test_n <- data %>% group_by_(g) %>% summarise_(n = ~n())
@@ -58,6 +46,15 @@ xbar_r_ <- function(data, x , g, mu=NULL, sigma=NULL){
     ###################################
     #### No extra changes from here ###
     ###################################
+
+    # Formulas
+    n <- interp(~n())
+    stat_formula <- interp( ~stat_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
+    shape_formula <- interp( ~shape_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
+    lcl_const_formula <- interp( ~constant(n, lcl_c))
+    ucl_const_formula <- interp( ~constant(n, ucl_c))
+    center_formula <- interp( ~center_fun(stat))
+    avg_shape_formula <- interp( ~avg_shape_fun(shape))
 
     ## add n(), stat(), shape(), "lcl_const", "ucl_const"
     stat_dots   <- setNames(
@@ -95,40 +92,38 @@ xbar_r_ <- function(data, x , g, mu=NULL, sigma=NULL){
 #' @param data a dataframe object
 #' @param x variable to be used
 #' @param g group variable
+#' @param mu average value of x variable (if known)
+#' @param sigma standard deviation of x variable (if known)
 #' @importFrom lazyeval interp
 #' @importFrom dplyr select_  group_by_ mutate_ left_join summarise_  %>%
 #' @importFrom chartconstants constant
 #' @return An object of class xbar-s
 #' @export
 #'
-xbar_s_ <- function(data, x , g){
+xbar_s_ <- function(data, x , g, mu=NULL, sigma=NULL){
 
     # lcl, ucl formulas and constants name
     lcl <- "center - lcl_const * avg_shape"
     ucl <- "center + ucl_const * avg_shape"
-    lcl_c <- "A3"
-    ucl_c <- "A3"
+    lcl_c <- ifelse(is.null(sigma), "A3", "A")
+    ucl_c <- ifelse(is.null(sigma), "A3", "A")
 
     # functions: stat, shape, center, avg_shape
-    stat_fun <- mean
-    shape_fun <- sd
+    stat_fun <- function(x, ...){ mean(x) }
+    shape_fun <- function(x, ...){ sd(x) }
     center_fun <- mean
     avg_shape_fun <- mean
+
+    #----------------------------------------
+    # Check if standards (mu and sigma) are given
+    center_fun <- set_function(fun = center_fun, k = mu)
+    shape_fun <- set_function(fun = shape_fun, k = sigma)
 
     # Class
     class <- "xbar-s"
 
     n_max <- 25
     n_min <- 8
-
-    # Formulas
-    n <- interp(~n())
-    stat_formula <- interp( ~stat_fun(x), x = as.name(x))
-    shape_formula <- interp( ~shape_fun(x), x = as.name(x))
-    lcl_const_formula <- interp( ~constant(n, lcl_c))
-    ucl_const_formula <- interp( ~constant(n, ucl_c))
-    center_formula <- interp( ~center_fun(stat))
-    avg_shape_formula <- interp( ~avg_shape_fun(shape))
 
     #check that n > nmin & n <= n_max
     test_n <- data %>% group_by_(g) %>% summarise_(n = ~n())
@@ -138,6 +133,14 @@ xbar_s_ <- function(data, x , g){
     ###################################
     #### No extra changes from here ###
     ###################################
+
+    n <- interp(~n())
+    stat_formula <- interp( ~stat_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
+    shape_formula <- interp( ~shape_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
+    lcl_const_formula <- interp( ~constant(n, lcl_c))
+    ucl_const_formula <- interp( ~constant(n, ucl_c))
+    center_formula <- interp( ~center_fun(stat))
+    avg_shape_formula <- interp( ~avg_shape_fun(shape))
 
     ## add n(), stat(), shape(), "lcl_const", "ucl_const"
     stat_dots   <- setNames(
@@ -176,39 +179,36 @@ xbar_s_ <- function(data, x , g){
 #' @param data a dataframe object
 #' @param x variable to be used
 #' @param g group variable
+#' @param sigma standard deviation of variable x (if known)
 #' @importFrom lazyeval interp
 #' @importFrom dplyr select_  group_by_ mutate_ left_join summarise_  %>%
 #' @importFrom chartconstants constant
 #' @return An object of class r
 #' @export
 #'
-r_ <- function(data, x , g){
+r_ <- function(data, x , g, sigma){
 
     # lcl ucl formulas and constants name
     lcl <- "lcl_const * center"
     ucl <- "ucl_const * center"
-    lcl_c <- "D3"
-    ucl_c <- "D4"
+    lcl_c <- ifelse(is.null(sigma), "D3", "D1")
+    ucl_c <- ifelse(is.null(sigma), "D4", "D2")
 
     # functions: stat, shape, center, avg_shape
-    stat_fun <- diff_range
-    shape_fun <- function(x){0}# In realta questa non serve a niente. Messa qui solo per avere no extra changes dopo
+    stat_fun <- function(x, ...){ diff_range(x) }
+    shape_fun <- function(x, ...){ 0 } #shape qui non serve. Identity non va bene siccome ritorna più valori
     center_fun <- mean
     avg_shape_fun <- mean
 
+    #----------------------------------------
+    # Check if standards (mu and sigma) are given
+    center_fun <- set_function(fun = center_fun, k = sigma)
+
     # Class
     class <- "r"
+
     n_min <- 2
     n_max <- 10
-
-    #Formulas
-    n <- interp( ~n())
-    stat_formula <- interp( ~stat_fun(x), x = as.name(x))
-    shape_formula <- interp( ~shape_fun(x), x = as.name(x))
-    lcl_const_formula <- interp( ~constant(n, lcl_c))
-    ucl_const_formula <- interp( ~constant(n, ucl_c))
-    center_formula <- interp( ~center_fun(stat))
-    avg_shape_formula <- interp( ~avg_shape_fun(shape))
 
     #check that n > nmin & n <= n_max
     test_n <- data %>% group_by_(g) %>% summarise_(n = ~n())
@@ -218,6 +218,14 @@ r_ <- function(data, x , g){
     ###################################
     #### No extra changes from here ###
     ###################################
+
+    n <- interp(~n())
+    stat_formula <- interp( ~stat_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
+    shape_formula <- interp( ~shape_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
+    lcl_const_formula <- interp( ~constant(n, lcl_c))
+    ucl_const_formula <- interp( ~constant(n, ucl_c))
+    center_formula <- interp( ~center_fun(stat))
+    avg_shape_formula <- interp( ~avg_shape_fun(shape))
 
     ## ## add n(), stat(), shape()
     stat_dots   <- setNames(
@@ -234,8 +242,8 @@ r_ <- function(data, x , g){
         summarise_(.dots = stat_dots)
 
     ## compute center , lcl and ucl
-    stat_data <- stat_data %>% mutate_( center = ~mean(stat),
-                                        avg_shape = ~mean(shape),
+    stat_data <- stat_data %>% mutate_( center = center_formula,
+                                        avg_shape = avg_shape_formula,
                                         lcl = lcl,
                                         ucl = ucl)
 
@@ -255,39 +263,35 @@ r_ <- function(data, x , g){
 #' @param data a dataframe object
 #' @param x variable to be used
 #' @param g group variable
+#' @param sigma standard deviation of x variable (if known)
 #' @importFrom lazyeval interp
 #' @importFrom dplyr select_  group_by_ mutate_ left_join summarise_  %>%
 #' @importFrom chartconstants constant
 #' @return An object of class r
 #' @export
 #'
-s_ <- function(data, x , g){
+s_ <- function(data, x , g, sigma){
 
     # lcl ucl formulas and constants name
     lcl <- "center * lcl_const"
     ucl <- "center * ucl_const"
-    lcl_c <- "B3"
-    ucl_c <- "B4"
+    lcl_c <- ifelse(is.null(sigma), "B3", "B5")
+    ucl_c <- ifelse(is.null(sigma), "B4", "B6")
 
     # functions: stat, shape, center, avg_shape
-    stat_fun <- sd
-    shape_fun <- function(x){0} # altra shape fun inutile solo per avere shape sotto
+    stat_fun <- function(x, ...){ sd(x) }
+    shape_fun <- function(x, ...){ 0 } # altra shape fun inutile. Messa solo per avere shape sotto
     center_fun <- mean
     avg_shape_fun <- mean
+
+    #----------------------------------------
+    # Check if standards (sigma) are given
+    center_fun <- set_function(fun = center_fun, k = sigma)
 
     # Class
     class <- "s"
     n_min <- 8
     n_max <- 25
-
-    # Formulas
-    n <- interp( ~n() )
-    stat_formula <- interp( ~stat_fun(x), x = as.name(x))
-    shape_formula <- interp( ~shape_fun(x), x = as.name(x))
-    lcl_const_formula <- interp( ~constant(n, lcl_c))
-    ucl_const_formula <- interp( ~constant(n, ucl_c))
-    center_formula <- interp( ~center_fun(stat))
-    avg_shape_formula <- interp( ~avg_shape_fun(shape))
 
     #check that n > nmin & n <= n_max
     test_n <- data %>% group_by_(g) %>% summarise_(n = ~n())
@@ -297,6 +301,15 @@ s_ <- function(data, x , g){
     ###################################
     #### No extra changes from here ###
     ###################################
+
+    # Formulas
+    n <- interp(~n())
+    stat_formula <- interp( ~stat_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
+    shape_formula <- interp( ~shape_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
+    lcl_const_formula <- interp( ~constant(n, lcl_c))
+    ucl_const_formula <- interp( ~constant(n, ucl_c))
+    center_formula <- interp( ~center_fun(stat))
+    avg_shape_formula <- interp( ~avg_shape_fun(shape))
 
     ## add stat, shape and n()
     stat_dots   <- setNames(
@@ -483,14 +496,14 @@ p_chart_ <- function(data, x, g){
 #'
 #' @param data a dataframe object
 #' @param x variable to be used
-#' @param mr_step step of the moving range
+#' @param g numeric integer step of the moving range
 #' @importFrom dplyr select_ mutate %>%
 #' @importFrom lazyeval interp
 #' @importFrom chartconstants constant
 #' @return An object of class mr_chart
 #' @export
 #'
-mr_chart_ <- function(data,x,mr_step){
+mr_chart_ <- function(data, x, g){
 
     # lcl ucl formulas and constants name
     lcl <- "lcl_const * center"
@@ -499,22 +512,13 @@ mr_chart_ <- function(data,x,mr_step){
     ucl_c <- "D4"
 
     # functions: stat, shape, center, avg_shape
-    stat_fun <- function(x, step = mr_step){ c(rep(NA,step-1), abs(diff(x,step-1)) ) }
-    shape_fun <- function(x){mean(x, na.rm = TRUE)}
-    center_fun <- mean
+    stat_fun <- function(x, ...){ c(rep(NA, g - 1), abs(diff(x, g - 1)) ) }
+    shape_fun <- function(x, ...){mean(x, na.rm = TRUE)}
+    center_fun <- function(x){mean(x, na.rm = TRUE)}
     avg_shape_fun <- mean
 
     # Class
     class <- "mr_chart"
-
-    # Formulas
-    n <- mr_step
-    stat_formula <- interp( ~stat_fun(x), x = as.name(x))
-    shape_formula <- interp( ~shape_fun(x), x = as.name(x))
-    lcl_const_formula <- interp( ~constant(n, lcl_c))
-    ucl_const_formula <- interp( ~constant(n, ucl_c))
-    center_formula <- interp( ~center_fun(stat, na.rm=TRUE))
-    avg_shape_formula <- interp( ~avg_shape_fun(shape))
 
     # Add "group"
     data <- data %>% mutate_(group = interp( ~row_number() ) )
@@ -522,6 +526,14 @@ mr_chart_ <- function(data,x,mr_step){
     ###################################
     #### No extra changes from here ###
     ###################################
+
+    n <- g
+    stat_formula <- interp( ~stat_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
+    shape_formula <- interp( ~shape_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
+    lcl_const_formula <- interp( ~constant(n, lcl_c))
+    ucl_const_formula <- interp( ~constant(n, ucl_c))
+    center_formula <- interp( ~center_fun(stat))
+    avg_shape_formula <- interp( ~avg_shape_fun(shape))
 
 
     ## add "n", "stat", "shape", "lcl_const", "ucl_const". Note: n is the step of the moving range
@@ -559,14 +571,14 @@ mr_chart_ <- function(data,x,mr_step){
 #'
 #' @param data a dataframe object
 #' @param x variable to be used
-#' @param mr_step moving range step
+#' @param g moving range step
 #' @importFrom dplyr select_ mutate %>%
 #' @importFrom lazyeval interp
 #' @importFrom chartconstants constant
 #' @return An object of class i_chart
 #' @export
 #'
-i_chart_ <- function(data, x, mr_step){
+i_chart_ <- function(data, x, g){
 
     # lcl ucl formulas and constants name
     lcl <- "center - lcl_const * avg_shape"
@@ -575,22 +587,13 @@ i_chart_ <- function(data, x, mr_step){
     ucl_c <- "i_chart_const"
 
     # functions: stat, shape, center, avg_shape
-    stat_fun <- identity
-    shape_fun <- function(x, step = mr_step){mean(abs(diff(x, step - 1)))}
+    stat_fun <- function(x, ...) { identity(x) }
+    shape_fun <- function(x, ...){mean(abs(diff(x, g - 1)))}
     center_fun <- mean
     avg_shape_fun <- mean
 
     # Class
     class <- "i_chart"
-
-    # Formulas
-    n <- mr_step
-    stat_formula <- interp( ~stat_fun(x), x = as.name(x))
-    shape_formula <- interp( ~shape_fun(x), x = as.name(x))
-    lcl_const_formula <- interp( ~constant(n, lcl_c))
-    ucl_const_formula <- interp( ~constant(n, ucl_c))
-    center_formula <- interp( ~center_fun(stat))
-    avg_shape_formula <- interp( ~avg_shape_fun(shape))
 
     # add group
     data <- data %>% mutate_(group =  interp( ~row_number() ) )
@@ -598,6 +601,15 @@ i_chart_ <- function(data, x, mr_step){
     ###################################
     #### No extra changes from here ###
     ###################################
+
+    # Formulas
+    n <- g
+    stat_formula <- interp( ~stat_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
+    shape_formula <- interp( ~shape_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
+    lcl_const_formula <- interp( ~constant(n, lcl_c))
+    ucl_const_formula <- interp( ~constant(n, ucl_c))
+    center_formula <- interp( ~center_fun(stat))
+    avg_shape_formula <- interp( ~avg_shape_fun(shape))
 
     ## add "n", "stat", "shape", "lcl_const", "ucl_const".  Note: n is the step of the moving range
     center_dots <- setNames(
@@ -643,9 +655,9 @@ i_chart_ <- function(data, x, mr_step){
 np_chart_ <- function(data, x, g){
 
     # Note: center = np
-    lcl <- "center - 3 * avg_shape"#"sqrt(center*(1 - center / n))"
-    ucl <- "center + 3 * avg_shape"#sqrt(center*(1 - center / n))
-    lcl_c <- "one"
+    lcl <- "center - 3 * avg_shape" # avg_shape = sqrt(center*(1 - center / n))
+    ucl <- "center + 3 * avg_shape"
+    lcl_c <- "one" # No constant is needed, constant(n, "one") simply returns 1.
     ucl_c <- "one"
 
     # functions: stat, shape, center, avg_shape

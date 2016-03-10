@@ -4,6 +4,8 @@
 #' @param data a dataframe object
 #' @param x variable to be used
 #' @param g group variable
+#' @param mu average value of x variable (if known)
+#' @param sigma standard deviation of x variable (if known)
 #' @importFrom lazyeval interp
 #' @importFrom dplyr select_  group_by_ mutate_ left_join summarise_  %>%
 #' @importFrom chartconstants constant
@@ -11,15 +13,15 @@
 #' @examples
 #' data(ingots)
 #' xbar_r (ingots, kg, group)
+#' xbar_r(ingots, kg, group, mu=1, sigma=0.01)
 #' @export
 #'
-xbar_r  <- function (data, x, g, mu=NULL, sigma=NULL){
+xbar_r  <- function (data, x, g, mu = NULL, sigma = NULL){
     x <- substitute(x)
     g <-substitute(g)
-    out <- xbar_r_ (data, x , g, mu=mu, sigma=sigma)
+    out <- xbar_r_ (data, x , g, mu = mu, sigma = sigma)
     return(out)
 }
-
 
 #########################################################
 #' Generate a xbar-s object
@@ -27,6 +29,8 @@ xbar_r  <- function (data, x, g, mu=NULL, sigma=NULL){
 #' @param data a dataframe object
 #' @param x variable to be used
 #' @param g group variable
+#' @param mu average value of x variable (if known)
+#' @param sigma standard deviation of x variable (if known)
 #' @importFrom lazyeval interp
 #' @importFrom dplyr select_  group_by_ mutate_ left_join summarise_  %>%
 #' @importFrom chartconstants constant
@@ -34,20 +38,23 @@ xbar_r  <- function (data, x, g, mu=NULL, sigma=NULL){
 #' @examples
 #' data(ingots)
 #' xbar_s(production, x = dim_mm, g = batch)
+#' xbar_s(production, dim_mm, batch, mu = 10, sigma = 1)
 #' @export
 #'
-xbar_s  <- function (data, x, g){
+xbar_s  <- function (data, x, g, mu = NULL, sigma = NULL){
     x <- substitute(x)
     g <-substitute(g)
-    out <- xbar_s_ (data, x , g)
+    out <- xbar_s_ (data, x , g, mu = mu, sigma = sigma)
     return(out)
 }
+
 #########################################################
 #' Generate a R object
 #'
 #' @param data a dataframe object
 #' @param x variable to be used
 #' @param g group variable
+#' @param sigma standard deviation of variable x (if known)
 #' @importFrom lazyeval interp
 #' @importFrom dplyr select_  group_by_ mutate_ left_join summarise_  %>%
 #' @importFrom chartconstants constant
@@ -55,12 +62,13 @@ xbar_s  <- function (data, x, g){
 #' @examples
 #' data(ingots)
 #' r(ingots, kg, group)
+#' r(ingots, kg, group, sigma=0.05)
 #' @export
 #'
-r  <- function (data, x, g){
+r  <- function (data, x, g, sigma = NULL){
     x <- substitute(x)
     g <-substitute(g)
-    out <- r_ (data, x , g)
+    out <- r_ (data, x , g, sigma = sigma)
     return(out)
 }
 
@@ -70,6 +78,7 @@ r  <- function (data, x, g){
 #' @param data a dataframe object
 #' @param x variable to be used
 #' @param g group variable
+#' @param sigma standard deviation of x variable (if known)
 #' @importFrom lazyeval interp
 #' @importFrom dplyr select_  group_by_ mutate_ left_join summarise_  %>%
 #' @importFrom chartconstants constant
@@ -77,12 +86,13 @@ r  <- function (data, x, g){
 #' @examples
 #' data(ingots)
 #' s(production, x = dim_mm, g = batch)
+#' s(production, x = dim_mm, g = batch, sigma=2)
 #' @export
 #'
-s  <- function (data, x, g){
+s  <- function (data, x, g, sigma = NULL){
     x <- substitute(x)
     g <-substitute(g)
-    out <- s_ (data, x , g)
+    out <- s_ (data, x , g, sigma = sigma)
     return(out)
 }
 
@@ -139,7 +149,7 @@ p_chart <- function(data, x, g){
 #'
 #' @param data a dataframe object
 #' @param x variable to be used
-#' @param mr_step step of the moving range
+#' @param g step of the moving range
 #' @importFrom dplyr select_ mutate %>%
 #' @importFrom lazyeval interp
 #' @importFrom chartconstants constant
@@ -147,12 +157,12 @@ p_chart <- function(data, x, g){
 #' @examples
 #' # Example with moving range of 2 (minumum moving range window size)
 #' data(test_i_mr)
-#' mr_chart(test_i_mr, cost, mr_step = 2)
+#' mr_chart(test_i_mr, cost, g = 2)
 #' @export
 #'
-mr_chart <- function(data,x,mr_step){
+mr_chart <- function(data, x, g){
     x <- substitute(x)
-    out <- mr_chart_(data,x,mr_step)
+    out <- mr_chart_(data, x, g)
     return(out)
 }
 
@@ -164,7 +174,7 @@ mr_chart <- function(data,x,mr_step){
 #'
 #' @param data a dataframe object
 #' @param x variable to be used
-#' @param mr_step step of the moving range
+#' @param g step of the moving range
 #' @importFrom dplyr select_ mutate %>%
 #' @importFrom lazyeval interp
 #' @importFrom chartconstants constant
@@ -174,9 +184,9 @@ mr_chart <- function(data,x,mr_step){
 #' i_chart(test_i_mr, cost, 2)
 #' @export
 #'
-i_chart  <- function (data, x, mr_step){
+i_chart  <- function (data, x, g){
     x <- substitute(x)
-    out <- i_chart_ (data, x , mr_step)
+    out <- i_chart_ (data, x , g)
     return(out)
 }
 
