@@ -4,12 +4,14 @@
 \alias{c_chart}
 \title{C chart}
 \usage{
-c_chart(data, x)
+c_chart(data, x, center = NULL)
 }
 \arguments{
 \item{data}{a dataframe object}
 
 \item{x}{variable to be used}
+
+\item{center}{parameter of the c chart, if known}
 }
 \value{
 An object of class c_chart

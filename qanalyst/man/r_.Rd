@@ -4,7 +4,7 @@
 \alias{r_}
 \title{SE version of r}
 \usage{
-r_(data, x, g, sigma)
+r_(data, x, g, sigma = NULL)
 }
 \arguments{
 \item{data}{a dataframe object}

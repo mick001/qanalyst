@@ -4,7 +4,7 @@
 \alias{s_}
 \title{SE version of s}
 \usage{
-s_(data, x, g, sigma)
+s_(data, x, g, sigma = NULL)
 }
 \arguments{
 \item{data}{a dataframe object}

@@ -104,6 +104,7 @@ s  <- function (data, x, g, sigma = NULL){
 #'
 #' @param data a dataframe object
 #' @param x variable to be used
+#' @param center parameter of the c chart, if known
 #' @importFrom lazyeval interp
 #' @importFrom dplyr select_ mutate_ summarise_ %>% mutate
 #' @return An object of class c_chart
@@ -112,9 +113,9 @@ s  <- function (data, x, g, sigma = NULL){
 #' c_chart(test_c, defect)
 #' @export
 #'
-c_chart  <- function(data, x){
+c_chart  <- function(data, x, center = NULL){
     x <- substitute(x)
-    out <- c_chart_(data, x)
+    out <- c_chart_(data, x, g = x, center = center)
     return(out)
 }
 
@@ -127,6 +128,7 @@ c_chart  <- function(data, x){
 #' @param data a dataframe object
 #' @param x variable to be used
 #' @param g size of each sample
+#' @param p parameter of the p chart
 #' @importFrom lazyeval interp
 #' @importFrom dplyr select_ mutate_ summarise_ %>% mutate
 #' @return An object of class p_chart
@@ -135,10 +137,10 @@ c_chart  <- function(data, x){
 #' p_chart(test_p, defect, sample_size)
 #' @export
 #'
-p_chart <- function(data, x, g){
+p_chart <- function(data, x, g, p = NULL){
     x <- substitute(x)
     g <- substitute(g)
-    out <- p_chart_(data, x, g)
+    out <- p_chart_(data, x, g, p)
     return(out)
 }
 

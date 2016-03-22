@@ -15,8 +15,6 @@ diff_range <- function(x, ...) {diff(range(x, ...))}
 #'
 #' @param fun stat_fun or shape_fun
 #' @param k control chart parameter (ex: mu or sigma) set by the user or NULL
-#' @param n sample size
-#' @param const control chart constant, if required
 #' @importFrom chartconstants constant
 #' @examples
 #' set_function(mean)         # Returns mean

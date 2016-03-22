@@ -4,7 +4,7 @@
 \alias{p_chart_}
 \title{P chart}
 \usage{
-p_chart_(data, x, g)
+p_chart_(data, x, g, p = NULL)
 }
 \arguments{
 \item{data}{a dataframe object}
@@ -12,6 +12,8 @@ p_chart_(data, x, g)
 \item{x}{variable to be used}
 
 \item{g}{size of each sample}
+
+\item{p}{parameter of the p chart}
 }
 \value{
 An object of class p_chart
