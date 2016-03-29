@@ -13,7 +13,7 @@ p_chart_(data, x, g, p = NULL)
 
 \item{g}{size of each sample}
 
-\item{p}{parameter of the p chart}
+\item{p}{parameter of the p chart (if known)}
 }
 \value{
 An object of class p_chart

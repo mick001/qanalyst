@@ -7,7 +7,7 @@
 #' @param mu average value of x variable (if known)
 #' @param sigma standard deviation of x variable (if known)
 #' @importFrom lazyeval interp
-#' @importFrom dplyr select_  group_by_ mutate_ left_join summarise_  %>%
+#' @importFrom dplyr select_  group_by_ mutate_ summarise_  %>% n
 #' @importFrom chartconstants constant
 #' @return An object of class xbar-R
 #' @examples
@@ -32,7 +32,7 @@ xbar_r  <- function (data, x, g, mu = NULL, sigma = NULL){
 #' @param mu average value of x variable (if known)
 #' @param sigma standard deviation of x variable (if known)
 #' @importFrom lazyeval interp
-#' @importFrom dplyr select_  group_by_ mutate_ left_join summarise_  %>%
+#' @importFrom dplyr select_  group_by_ mutate_ summarise_  %>% n
 #' @importFrom chartconstants constant
 #' @return An object of class xbar-R
 #' @examples
@@ -56,7 +56,7 @@ xbar_s  <- function (data, x, g, mu = NULL, sigma = NULL){
 #' @param g group variable
 #' @param sigma standard deviation of variable x (if known)
 #' @importFrom lazyeval interp
-#' @importFrom dplyr select_  group_by_ mutate_ left_join summarise_  %>%
+#' @importFrom dplyr select_ group_by_ mutate_ summarise_  %>% n
 #' @importFrom chartconstants constant
 #' @return An object of class xbar-R
 #' @examples
@@ -80,7 +80,7 @@ r  <- function (data, x, g, sigma = NULL){
 #' @param g group variable
 #' @param sigma standard deviation of x variable (if known)
 #' @importFrom lazyeval interp
-#' @importFrom dplyr select_  group_by_ mutate_ left_join summarise_  %>%
+#' @importFrom dplyr select_ group_by_ mutate_ summarise_  %>% n
 #' @importFrom chartconstants constant
 #' @return An object of class s
 #' @examples
@@ -106,7 +106,8 @@ s  <- function (data, x, g, sigma = NULL){
 #' @param x variable to be used
 #' @param center parameter of the c chart, if known
 #' @importFrom lazyeval interp
-#' @importFrom dplyr select_ mutate_ summarise_ %>% mutate
+#' @importFrom dplyr select_ mutate_ summarise_ %>% mutate n
+#' @importFrom chartconstants constant
 #' @return An object of class c_chart
 #' @examples
 #' data(test_c)
@@ -130,7 +131,8 @@ c_chart  <- function(data, x, center = NULL){
 #' @param g size of each sample
 #' @param p parameter of the p chart
 #' @importFrom lazyeval interp
-#' @importFrom dplyr select_ mutate_ summarise_ %>% mutate
+#' @importFrom dplyr select_ mutate_ summarise_ %>% mutate n
+#' @importFrom chartconstants constant
 #' @return An object of class p_chart
 #' @examples
 #' data(test_p)
@@ -151,8 +153,8 @@ p_chart <- function(data, x, g, p = NULL){
 #'
 #' @param data a dataframe object
 #' @param x variable to be used
-#' @param g step of the moving range
-#' @importFrom dplyr select_ mutate %>%
+#' @param g numeric integer step of the moving range
+#' @importFrom dplyr select_ mutate %>% n
 #' @importFrom lazyeval interp
 #' @importFrom chartconstants constant
 #' @return An object of class mr_chart
@@ -176,7 +178,7 @@ mr_chart <- function(data, x, g){
 #'
 #' @param data a dataframe object
 #' @param x variable to be used
-#' @param g step of the moving range
+#' @param g numeric integer step of the moving range
 #' @importFrom dplyr select_ mutate %>%
 #' @importFrom lazyeval interp
 #' @importFrom chartconstants constant
@@ -201,7 +203,8 @@ i_chart  <- function (data, x, g){
 #' @param x variable to be used
 #' @param g size of each sample
 #' @importFrom lazyeval interp
-#' @importFrom dplyr select_ mutate_ summarise_ %>% mutate
+#' @importFrom dplyr select_ mutate_ summarise_ %>% mutate n
+#' @importFrom chartconstants constant
 #' @return An object of class np_chart
 #' @examples
 #' data(test_np)
@@ -224,7 +227,8 @@ np_chart  <- function (data, x, g){
 #' @param x variable to be used
 #' @param g number of inspection units per sample (sample size within each inspection unit is assumed constant)
 #' @importFrom lazyeval interp
-#' @importFrom dplyr select_ mutate_ summarise_ %>% mutate
+#' @importFrom dplyr select_ mutate_ summarise_ %>% mutate n
+#' @importFrom chartconstants constant
 #' @return An object of class u_chart
 #' @examples
 #' data(test_u)

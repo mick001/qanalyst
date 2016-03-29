@@ -13,7 +13,7 @@ c_chart_(data, x, g, center = NULL)
 
 \item{g}{This variable is not used in the c chart. It is set to be equal to x by default in the NSE function.}
 
-\item{center}{parameter of the c chart, if known}
+\item{center}{parameter of the c chart (if known)}
 }
 \value{
 An object of class c_chart

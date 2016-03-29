@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{set_function}
 \alias{set_function}
-\title{Utility factory function. Returns fun if k is null, else returns f(x){k}}
+\title{Utility factory function. Returns fun if k is null, else returns f(x, ...){ k }}
 \usage{
 set_function(fun, k = NULL)
 }
@@ -12,7 +12,7 @@ set_function(fun, k = NULL)
 \item{k}{control chart parameter (ex: mu or sigma) set by the user or NULL}
 }
 \description{
-Utility factory function. Returns fun if k is null, else returns f(x){k}
+Utility factory function. Returns fun if k is null, else returns f(x, ...){ k }
 }
 \examples{
 set_function(mean)         # Returns mean

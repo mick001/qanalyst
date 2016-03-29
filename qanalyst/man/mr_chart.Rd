@@ -11,7 +11,7 @@ mr_chart(data, x, g)
 
 \item{x}{variable to be used}
 
-\item{g}{step of the moving range}
+\item{g}{numeric integer step of the moving range}
 }
 \value{
 An object of class mr_chart
