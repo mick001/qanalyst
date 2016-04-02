@@ -4,7 +4,8 @@
 \alias{xbar_r}
 \title{Generate a xbar R object}
 \usage{
-xbar_r(data, x, g, mu = NULL, sigma = NULL)
+xbar_r(data, x, g, mu = NULL, sigma = NULL, lcl_value = NULL,
+  ucl_value = NULL)
 }
 \arguments{
 \item{data}{a dataframe object}
@@ -16,6 +17,10 @@ xbar_r(data, x, g, mu = NULL, sigma = NULL)
 \item{mu}{average value of x variable (if known)}
 
 \item{sigma}{standard deviation of x variable (if known)}
+
+\item{lcl_value}{lower control limit value (if known)}
+
+\item{ucl_value}{upper control limit value (if known)}
 }
 \value{
 An object of class xbar-R

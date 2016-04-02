@@ -1,3 +1,10 @@
+################################################################################
+#               PLOT is not working with individual charts
+#               because it uses group as x variable.
+#
+#                           to be revised.
+################################################################################
+
 #' plot.spc
 #' plot an object of class spc
 #' @param data spc object

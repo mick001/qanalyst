@@ -7,42 +7,59 @@
 #' @param g group variable
 #' @param mu average value of x variable (if known)
 #' @param sigma standard deviation of x variable (if known)
+#' @param lcl_value lower control limit value (if known)
+#' @param ucl_value upper control limit value (if known)
 #' @importFrom lazyeval interp
 #' @importFrom dplyr select_  group_by_ mutate_ left_join summarise_  %>% n
 #' @importFrom chartconstants constant
 #' @return An object of class xbar-r
 #' @export
 #'
-xbar_r_ <- function(data, x , g, mu=NULL, sigma=NULL){
+xbar_r_ <- function(data, x , g, mu=NULL, sigma=NULL, lcl_value=NULL, ucl_value=NULL){
 
     # Set lcl and ucl constants.
     # (Note that, for some charts, constants may be different if chart parameters are given)
-    lcl_c <- ifelse(is.null(sigma), "A2", "A")
-    ucl_c <- ifelse(is.null(sigma), "A2", "A")
+    # This is the case for instance of the xbar-r, xbar-s, r and s charts.
+    lcl_constant <- if(is.null(sigma)){ "A2" }else{ "A" }
+    ucl_constant <- if(is.null(sigma)){ "A2" }else{ "A" }
 
-    # Set lcl ucl formulas
-    lcl <- "center - lcl_const * avg_shape"
-    ucl <- "center + ucl_const * avg_shape"
+    ########################################
+    # Replaced at line 81-82. These are some extra changes though. To be confirmed
+    # and extended to the other charts, if approved.
+    # Can I do the same for center_fun? This would help with R and S charts.
+
+    # Set lcl ucl formulas.
+    #lcl <- "center - lcl_const * avg_shape"
+    #ucl <- "center + ucl_const * avg_shape"
+    #lcl <- lcl_fun(class = "xbar_r", value = lcl_value)
+    #ucl <- ucl_fun(class = "xbar_r", value = ucl_value)
+    ########################################
 
     # Set functions for calculating: stat, shape, center, avg_shape, n
     # Note: if n_fun is NULL, then dplyr::n is used.
-    stat_fun <- function(x, ...) {mean(x)}
-    shape_fun <- function(x, ...) {diff_range(x)}
+    stat_fun <- function(x, ...) { mean(x) }
+    shape_fun <- function(x, ...) { diff_range(x) }
     center_fun <- mean
     avg_shape_fun <- mean
     n_fun <- NULL
 
-    # Check if standards (mu and sigma) are given. If standards are given, then
-    # set_function returns the following function: function(x, ...){ k }, otherwise
-    # set_function returns fun.
+    # Check if standards (mu and sigma) are given.
+    # If standards are given, then
+    # set_function returns the following function: function(x, ...){ k },
+    # otherwise set_function returns fun.
     center_fun <- set_function(fun = center_fun, k = mu)
     shape_fun <- set_function(fun = shape_fun, k = sigma)
 
-    # Set group variable
+    # This variable is TRUE if the chart is a group chart (such as xbar-r, xbar-s, s and s)
+    # otherwise it is set to FALSE.
+    # If TRUE, a group_by(g) is performed before making the calculations.
+    is_group <- TRUE
+
+    # Set "group" variable
     group_var <- as.character(g)
 
-    # Set object Class
-    class <- "xbar-r"
+    # Set object Class.
+    class <- "xbar_r"
 
     # check that n > nmin & n <= n_max
     n_min <- 2
@@ -59,10 +76,12 @@ xbar_r_ <- function(data, x , g, mu=NULL, sigma=NULL){
     n_formula <- if(is.null(n_fun)){ interp(~n()) }else{ interp(~n_fun(x, y), .values = list(x = as.name(x),y = as.name(g))) }
     stat_formula <- interp( ~stat_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
     shape_formula <- interp( ~shape_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
-    lcl_const_formula <- interp( ~constant(n, lcl_c))
-    ucl_const_formula <- interp( ~constant(n, ucl_c))
+    lcl_const_formula <- interp( ~constant(n, lcl_constant))
+    ucl_const_formula <- interp( ~constant(n, ucl_constant))
     center_formula <- interp( ~center_fun(stat))
     avg_shape_formula <- interp( ~avg_shape_fun(shape))
+    lcl_formula <- lcl_fun(class = class, value = lcl_value)    ###
+    ucl_formula <- ucl_fun(class = class, value = ucl_value)    ###
 
     # Add n(), stat(), shape(), lcl_const, ucl_const
     stat_dots   <- setNames(
@@ -74,15 +93,21 @@ xbar_r_ <- function(data, x , g, mu=NULL, sigma=NULL){
         c("n", "stat" , "shape", "lcl_const", "ucl_const")
     )
 
-    stat_data <- data %>%
-        group_by_(group_var) %>%
-        summarise_(.dots = stat_dots)
+    # If the chart is a "group chart" then group_by and summarise,
+    # otherwise simply use mutate.
+    if(is_group){
+        stat_data <- data %>%
+            group_by_(group_var) %>%
+            summarise_(.dots = stat_dots)
+    }else{
+        stat_data <- data %>% mutate_(.dots = stat_dots)
+    }
 
     # Compute center, average shape, lcl and ucl
     stat_data <- stat_data %>% mutate_( center = center_formula,
                                         avg_shape = avg_shape_formula,
-                                        lcl = lcl,
-                                        ucl = ucl)
+                                        lcl = lcl_formula,#############
+                                        ucl = ucl_formula )############
 
     # Column Filter. Select relevant columns only
     stat_data <- stat_data %>% select_( group = group_var, "n",  "stat", "center", "lcl", "ucl")
@@ -113,8 +138,9 @@ xbar_s_ <- function(data, x , g, mu=NULL, sigma=NULL){
 
     # Set lcl and ucl constants.
     # (Note that, for some charts, constants may be different if chart parameters are given)
-    lcl_c <- ifelse(is.null(sigma), "A3", "A")
-    ucl_c <- ifelse(is.null(sigma), "A3", "A")
+    # This is the case for instance of the xbar-r, xbar-s, r and s charts.
+    lcl_constant <- if(is.null(sigma)){ "A3" }else{ "A" }
+    ucl_constant <- if(is.null(sigma)){ "A3" }else{ "A" }
 
     # Set lcl and ucl formulas
     lcl <- "center - lcl_const * avg_shape"
@@ -128,17 +154,23 @@ xbar_s_ <- function(data, x , g, mu=NULL, sigma=NULL){
     avg_shape_fun <- mean
     n_fun <- NULL
 
-    # Check if standards (mu and sigma) are given. If standards are given, then
-    # set_function returns the following function: function(x, ...){ k }, otherwise
-    # set_function returns fun.
+    # Check if standards (mu and sigma) are given.
+    # If standards are given, then
+    # set_function returns the following function: function(x, ...){ k },
+    # otherwise set_function returns fun.
     center_fun <- set_function(fun = center_fun, k = mu)
     shape_fun <- set_function(fun = shape_fun, k = sigma)
+
+    # This variable is TRUE if the chart is a group chart (such as xbar-r, xbar-s, s and s)
+    # otherwise it is set to FALSE.
+    # If TRUE, a group_by(g) is performed before making the calculations.
+    is_group <- TRUE
 
     # Set group variable
     group_var <- as.character(g)
 
     # Set object Class
-    class <- "xbar-s"
+    class <- "xbar_s"
 
     # check that n > nmin & n <= n_max
     n_max <- 25
@@ -155,8 +187,8 @@ xbar_s_ <- function(data, x , g, mu=NULL, sigma=NULL){
     n_formula <- if(is.null(n_fun)){ interp(~n()) }else{ interp(~n_fun(x, y), .values = list(x = as.name(x),y = as.name(g))) }
     stat_formula <- interp( ~stat_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
     shape_formula <- interp( ~shape_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
-    lcl_const_formula <- interp( ~constant(n, lcl_c))
-    ucl_const_formula <- interp( ~constant(n, ucl_c))
+    lcl_const_formula <- interp( ~constant(n, lcl_constant))
+    ucl_const_formula <- interp( ~constant(n, ucl_constant))
     center_formula <- interp( ~center_fun(stat))
     avg_shape_formula <- interp( ~avg_shape_fun(shape))
 
@@ -170,9 +202,15 @@ xbar_s_ <- function(data, x , g, mu=NULL, sigma=NULL){
         c("n", "stat" , "shape", "lcl_const", "ucl_const")
     )
 
-    stat_data <- data %>%
-        group_by_(g) %>%
-        summarise_(.dots = stat_dots)
+    # If the chart is a "group chart" then group_by and summarise,
+    # otherwise simply use mutate.
+    if(is_group){
+        stat_data <- data %>%
+            group_by_(group_var) %>%
+            summarise_(.dots = stat_dots)
+    }else{
+        stat_data <- data %>% mutate_(.dots = stat_dots)
+    }
 
     # Compute center, average shape, lcl and ucl
     stat_data <- stat_data %>% mutate_( center = center_formula,
@@ -207,8 +245,8 @@ r_ <- function(data, x , g, sigma = NULL){
 
     # Set lcl and ucl constants name
     # (Note that, for some charts, constants may be different if chart parameters are given)
-    lcl_c <- ifelse(is.null(sigma), "D3", "D1")
-    ucl_c <- ifelse(is.null(sigma), "D4", "D2")
+    lcl_constant <- if(is.null(sigma)){ "D3" }else{ "D1" }
+    ucl_constant <- if(is.null(sigma)){ "D4" }else{ "D2" }
 
     # Set lcl and ucl formulas
     lcl <- "lcl_const * center"
@@ -222,10 +260,16 @@ r_ <- function(data, x , g, sigma = NULL){
     avg_shape_fun <- mean
     n_fun <- NULL
 
-    # Check if standards (mu and sigma) are given. If standards are given, then
-    # set_function returns the following function: function(x, ...){ k }, otherwise
-    # set_function returns fun.
+    # Check if standards (mu and sigma) are given.
+    # If standards are given, then
+    # set_function returns the following function: function(x, ...){ k },
+    # otherwise set_function returns fun.
     center_fun <- set_function(fun = center_fun, k = sigma)
+
+    # This variable is TRUE if the chart is a group chart (such as xbar-r, xbar-s, s and s)
+    # otherwise it is set to FALSE.
+    # If TRUE, a group_by(g) is performed before making the calculations.
+    is_group <- TRUE
 
     # Set group variable
     group_var <- as.character(g)
@@ -248,8 +292,8 @@ r_ <- function(data, x , g, sigma = NULL){
     n_formula <- if(is.null(n_fun)){ interp(~n()) }else{ interp(~n_fun(x, y), .values = list(x = as.name(x),y = as.name(g))) }
     stat_formula <- interp( ~stat_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
     shape_formula <- interp( ~shape_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
-    lcl_const_formula <- interp( ~constant(n, lcl_c))
-    ucl_const_formula <- interp( ~constant(n, ucl_c))
+    lcl_const_formula <- interp( ~constant(n, lcl_constant))
+    ucl_const_formula <- interp( ~constant(n, ucl_constant))
     center_formula <- interp( ~center_fun(stat))
     avg_shape_formula <- interp( ~avg_shape_fun(shape))
 
@@ -263,9 +307,15 @@ r_ <- function(data, x , g, sigma = NULL){
         c("n", "stat", "shape", "lcl_const", "ucl_const")
     )
 
-    stat_data <- data %>%
-        group_by_(g) %>%
-        summarise_(.dots = stat_dots)
+    # If the chart is a "group chart" then group_by and summarise,
+    # otherwise simply use mutate.
+    if(is_group){
+        stat_data <- data %>%
+            group_by_(group_var) %>%
+            summarise_(.dots = stat_dots)
+    }else{
+        stat_data <- data %>% mutate_(.dots = stat_dots)
+    }
 
     # Compute center, average shape, lcl and ucl
     stat_data <- stat_data %>% mutate_( center = center_formula,
@@ -300,8 +350,8 @@ s_ <- function(data, x , g, sigma = NULL){
 
     # Set lcl and ucl constants name
     # (Note that, for some charts, constants may be different if chart parameters are given)
-    lcl_c <- ifelse(is.null(sigma), "B3", "B5")
-    ucl_c <- ifelse(is.null(sigma), "B4", "B6")
+    lcl_constant <- if(is.null(sigma)){ "B3" }else{ "B5" }
+    ucl_constant <- if(is.null(sigma)){ "B4" }else{ "B6" }
 
     # Set lcl and ucl formulas
     lcl <- "center * lcl_const"
@@ -315,10 +365,16 @@ s_ <- function(data, x , g, sigma = NULL){
     avg_shape_fun <- mean
     n_fun <- NULL
 
-    # Check if standards (mu and sigma) are given. If standards are given, then
-    # set_function returns the following function: function(x, ...){ k }, otherwise
-    # set_function returns fun.
+    # Check if standards (mu and sigma) are given.
+    # If standards are given, then
+    # set_function returns the following function: function(x, ...){ k },
+    # otherwise set_function returns fun.
     center_fun <- set_function(fun = center_fun, k = sigma)
+
+    # This variable is TRUE if the chart is a group chart (such as xbar-r, xbar-s, s and s)
+    # otherwise it is set to FALSE.
+    # If TRUE, a group_by(g) is performed before making the calculations.
+    is_group <- TRUE
 
     # Set group variable
     group_var <- as.character(g)
@@ -341,8 +397,8 @@ s_ <- function(data, x , g, sigma = NULL){
     n_formula <- if(is.null(n_fun)){ interp(~n()) }else{ interp(~n_fun(x, y), .values = list(x = as.name(x),y = as.name(g))) }
     stat_formula <- interp( ~stat_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
     shape_formula <- interp( ~shape_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
-    lcl_const_formula <- interp( ~constant(n, lcl_c))
-    ucl_const_formula <- interp( ~constant(n, ucl_c))
+    lcl_const_formula <- interp( ~constant(n, lcl_constant))
+    ucl_const_formula <- interp( ~constant(n, ucl_constant))
     center_formula <- interp( ~center_fun(stat))
     avg_shape_formula <- interp( ~avg_shape_fun(shape))
 
@@ -356,9 +412,15 @@ s_ <- function(data, x , g, sigma = NULL){
         c("n", "stat", "shape", "lcl_const", "ucl_const")
     )
 
-    stat_data <- data %>%
-        group_by_(g) %>%
-        summarise_(.dots = stat_dots)
+    # If the chart is a "group chart" then group_by and summarise,
+    # otherwise simply use mutate.
+    if(is_group){
+        stat_data <- data %>%
+            group_by_(group_var) %>%
+            summarise_(.dots = stat_dots)
+    }else{
+        stat_data <- data %>% mutate_(.dots = stat_dots)
+    }
 
     # Compute center, average shape, lcl and ucl
     stat_data <- stat_data %>% mutate_( center = center_formula,
@@ -395,8 +457,8 @@ c_chart_ <- function(data, x, g, center = NULL){
 
     # Set lcl and ucl constants.
     # (Note that, for some charts, constants may be different if chart parameters are given)
-    lcl_c <- "one"                                      # constant(n, "one") returns 1 whatever n.
-    ucl_c <- "one"
+    lcl_constant <- "one"                                      # constant(n, "one") returns 1 whatever n.
+    ucl_constant <- "one"
     # Set lcl and ucl formulas
     lcl <- "center - 3 * avg_shape"                     # avg_shape = sqrt(center)"
     ucl <- "center + 3 * avg_shape"
@@ -409,15 +471,24 @@ c_chart_ <- function(data, x, g, center = NULL){
     avg_shape_fun <- mean
     n_fun <- function(x, ...){1}
 
-    # Check if standards (mu and sigma) are given. If standards are given, then
-    # set_function returns the following function: function(x, ...){ k }, otherwise
-    # set_function returns fun.
+    # Check if standards (mu and sigma) are given.
+    # If standards are given, then
+    # set_function returns the following function: function(x, ...){ k },
+    # otherwise set_function returns fun.
     center_fun <- set_function(fun = center_fun, k = center)
 
     # Set object Class
     class <- "c_chart"
 
-    # Add group and set group variable
+    # This variable is TRUE if the chart is a group chart (such as xbar-r, xbar-s, s and s)
+    # otherwise it is set to FALSE.
+    # If TRUE, a group_by(g) is performed before making the calculations.
+    is_group <- FALSE
+
+    # Add group and set group variable.
+    # Note: charts for single values, such as I and MR, and charts for attributes, such
+    # as c and p, do not need any group variable. However, a group variable is added in
+    # oderd to output a consistent dataframe across all charts.
     data <- data %>% mutate_(group = 1 )
     group_var <- "group"
 
@@ -429,8 +500,8 @@ c_chart_ <- function(data, x, g, center = NULL){
     n_formula <- if(is.null(n_fun)){ interp(~n()) }else{ interp(~n_fun(x, y), .values = list(x = as.name(x),y = as.name(g))) }
     stat_formula <- interp( ~stat_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
     shape_formula <- interp( ~shape_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
-    lcl_const_formula <- interp( ~constant(n, lcl_c))
-    ucl_const_formula <- interp( ~constant(n, ucl_c))
+    lcl_const_formula <- interp( ~constant(n, lcl_constant))
+    ucl_const_formula <- interp( ~constant(n, ucl_constant))
     center_formula <- interp( ~center_fun(stat))
     avg_shape_formula <- interp( ~avg_shape_fun(shape))
 
@@ -444,7 +515,15 @@ c_chart_ <- function(data, x, g, center = NULL){
         c("n", "stat", "shape", "lcl_const", "ucl_const")
     )
 
-    stat_data <- data %>% mutate_(.dots = stat_dots)
+    # If the chart is a "group chart" then group_by and summarise,
+    # otherwise simply use mutate.
+    if(is_group){
+        stat_data <- data %>%
+            group_by_(group_var) %>%
+            summarise_(.dots = stat_dots)
+    }else{
+        stat_data <- data %>% mutate_(.dots = stat_dots)
+    }
 
     # Add lcl and ucl
     stat_data <- stat_data %>% mutate_( center = center_formula,
@@ -481,8 +560,8 @@ p_chart_ <- function(data, x, g, p = NULL){
 
     # Set lcl and ucl constants.
     # (Note that, for some charts, constants may be different if chart parameters are given)
-    lcl_c <- "one"
-    ucl_c <- "one"
+    lcl_constant <- "one"
+    ucl_constant <- "one"
 
     # Set lcl and ucl formulas
     ucl <- "center + 3 * avg_shape"             # avg_shape = sqrt( center * (1 - center) / n)
@@ -504,7 +583,15 @@ p_chart_ <- function(data, x, g, p = NULL){
     # Set object Class
     class <- "p_chart"
 
-    # Add group and set group variable
+    # This variable is TRUE if the chart is a group chart (such as xbar-r, xbar-s, s and s)
+    # otherwise it is set to FALSE.
+    # If TRUE, a group_by(g) is performed before making the calculations.
+    is_group <- FALSE
+
+    # Add group and set group variable.
+    # Note: charts for single values, such as I and MR, and charts for attributes, such
+    # as c and p, do not need any group variable. However, a group variable is added in
+    # oderd to output a consistent dataframe across all charts.
     data <- data %>% mutate_(group = 1 )
     group_var <- "group"
 
@@ -516,8 +603,8 @@ p_chart_ <- function(data, x, g, p = NULL){
     n_formula <- if(is.null(n_fun)){ interp(~n()) }else{ interp(~n_fun(x, y), .values = list(x = as.name(x),y = as.name(g))) }
     stat_formula <- interp( ~stat_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
     shape_formula <- interp( ~shape_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
-    lcl_const_formula <- interp( ~constant(n, lcl_c))
-    ucl_const_formula <- interp( ~constant(n, ucl_c))
+    lcl_const_formula <- interp( ~constant(n, lcl_constant))
+    ucl_const_formula <- interp( ~constant(n, ucl_constant))
     center_formula <- interp( ~center_fun(x, y), x = as.name(x), y = as.name(g))
     avg_shape_formula <- interp( ~avg_shape_fun(shape))
 
@@ -531,7 +618,15 @@ p_chart_ <- function(data, x, g, p = NULL){
         c("n", "stat", "shape", "lcl_const", "ucl_const")
     )
 
-    stat_data <- data %>% mutate_(.dots = stat_dots)
+    # If the chart is a "group chart" then group_by and summarise,
+    # otherwise simply use mutate.
+    if(is_group){
+        stat_data <- data %>%
+            group_by_(group_var) %>%
+            summarise_(.dots = stat_dots)
+    }else{
+        stat_data <- data %>% mutate_(.dots = stat_dots)
+    }
 
     # Compute center, average shape, lcl and ucl
     stat_data <- stat_data %>% mutate_(center = center_formula,
@@ -570,8 +665,8 @@ mr_chart_ <- function(data, x, g){
 
     # Set lcl and ucl constants.
     # (Note that, for some charts, constants may be different if chart parameters are given)
-    lcl_c <- "D3"
-    ucl_c <- "D4"
+    lcl_constant <- "D3"
+    ucl_constant <- "D4"
 
     # Set lcl and ucl formulas
     lcl <- "lcl_const * center"
@@ -588,7 +683,15 @@ mr_chart_ <- function(data, x, g){
     # Set object Class
     class <- "mr_chart"
 
-    # Add group and set group variable name
+    # This variable is TRUE if the chart is a group chart (such as xbar-r, xbar-s, s and s)
+    # otherwise it is set to FALSE.
+    # If TRUE, a group_by(g) is performed before making the calculations.
+    is_group <- FALSE
+
+    # Add group and set group variable.
+    # Note: charts for single values, such as I and MR, and charts for attributes, such
+    # as c and p, do not need any group variable. However, a group variable is added in
+    # oderd to output a consistent dataframe across all charts.
     data <- data %>% mutate_(group = 1 )
     group_var <- "group"
 
@@ -600,8 +703,8 @@ mr_chart_ <- function(data, x, g){
     n_formula <- if(is.null(n_fun)){ interp(~n()) }else{ interp(~n_fun(x, y), .values = list(x = as.name(x),y = as.name(g))) }
     stat_formula <- interp( ~stat_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
     shape_formula <- interp( ~shape_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
-    lcl_const_formula <- interp( ~constant(n, lcl_c))
-    ucl_const_formula <- interp( ~constant(n, ucl_c))
+    lcl_const_formula <- interp( ~constant(n, lcl_constant))
+    ucl_const_formula <- interp( ~constant(n, ucl_constant))
     center_formula <- interp( ~center_fun(stat))
     avg_shape_formula <- interp( ~avg_shape_fun(shape))
 
@@ -615,7 +718,15 @@ mr_chart_ <- function(data, x, g){
         c("n", "stat", "shape", "lcl_const", "ucl_const")
     )
 
-    stat_data <- data %>% mutate_(.dots = stat_dots)
+    # If the chart is a "group chart" then group_by and summarise,
+    # otherwise simply use mutate.
+    if(is_group){
+        stat_data <- data %>%
+            group_by_(group_var) %>%
+            summarise_(.dots = stat_dots)
+    }else{
+        stat_data <- data %>% mutate_(.dots = stat_dots)
+    }
 
     # Add lcl and ucl
     stat_data <- stat_data %>% mutate_( center = center_formula,
@@ -651,8 +762,8 @@ i_chart_ <- function(data, x, g){
 
     # Set lcl and ucl constants.
     # (Note that, for some charts, constants may be different if chart parameters are given)
-    lcl_c <- "i_chart_const"
-    ucl_c <- "i_chart_const"
+    lcl_constant <- "i_chart_const"
+    ucl_constant <- "i_chart_const"
 
     # Set lcl and ucl formula
     lcl <- "center - lcl_const * avg_shape"
@@ -669,7 +780,15 @@ i_chart_ <- function(data, x, g){
     # Set object Class
     class <- "i_chart"
 
-    # Add group and set group variable
+    # This variable is TRUE if the chart is a group chart (such as xbar-r, xbar-s, s and s)
+    # otherwise it is set to FALSE.
+    # If TRUE, a group_by(g) is performed before making the calculations.
+    is_group <- FALSE
+
+    # Add group and set group variable.
+    # Note: charts for single values, such as I and MR, and charts for attributes, such
+    # as c and p, do not need any group variable. However, a group variable is added in
+    # oderd to output a consistent dataframe across all charts.
     data <- data %>% mutate_(group = 1 )
     group_var <- "group"
 
@@ -681,8 +800,8 @@ i_chart_ <- function(data, x, g){
     n_formula <- if(is.null(n_fun)){ interp(~n()) }else{ interp(~n_fun(x, y), .values = list(x = as.name(x),y = as.name(g))) }
     stat_formula <- interp( ~stat_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
     shape_formula <- interp( ~shape_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
-    lcl_const_formula <- interp( ~constant(n, lcl_c))
-    ucl_const_formula <- interp( ~constant(n, ucl_c))
+    lcl_const_formula <- interp( ~constant(n, lcl_constant))
+    ucl_const_formula <- interp( ~constant(n, ucl_constant))
     center_formula <- interp( ~center_fun(stat))
     avg_shape_formula <- interp( ~avg_shape_fun(shape))
 
@@ -696,7 +815,15 @@ i_chart_ <- function(data, x, g){
         c("n", "stat", "shape", "lcl_const", "ucl_const")
     )
 
-    stat_data <- data %>% mutate_(.dots = stat_dots)
+    # If the chart is a "group chart" then group_by and summarise,
+    # otherwise simply use mutate.
+    if(is_group){
+        stat_data <- data %>%
+            group_by_(group_var) %>%
+            summarise_(.dots = stat_dots)
+    }else{
+        stat_data <- data %>% mutate_(.dots = stat_dots)
+    }
 
     # Compute center, average shape, lcl and ucl
     stat_data <- stat_data %>% mutate_( center = center_formula,
@@ -732,8 +859,8 @@ np_chart_ <- function(data, x, g){
 
     # Set lcl and ucl constants.
     # (Note that, for some charts, constants may be different if chart parameters are given)
-    lcl_c <- "one"                              # No constant is needed, constant(n, "one") simply returns 1.
-    ucl_c <- "one"
+    lcl_constant <- "one"                              # No constant is needed, constant(n, "one") simply returns 1.
+    ucl_constant <- "one"
 
     # Set lcl and ucl formula
     lcl <- "center - 3 * avg_shape"             # avg_shape = sqrt(center*(1 - center / n))
@@ -750,7 +877,15 @@ np_chart_ <- function(data, x, g){
     # Set object Class
     class <- "np_chart"
 
-    # Add group and set group variable
+    # This variable is TRUE if the chart is a group chart (such as xbar-r, xbar-s, s and s)
+    # otherwise it is set to FALSE.
+    # If TRUE, a group_by(g) is performed before making the calculations.
+    is_group <- FALSE
+
+    # Add group and set group variable.
+    # Note: charts for single values, such as I and MR, and charts for attributes, such
+    # as c and p, do not need any group variable. However, a group variable is added in
+    # oderd to output a consistent dataframe across all charts.
     data <- data %>% mutate_(group = 1 )
     group_var <- "group"
 
@@ -762,8 +897,8 @@ np_chart_ <- function(data, x, g){
     n_formula <- if(is.null(n_fun)){ interp(~n()) }else{ interp(~n_fun(x, y), .values = list(x = as.name(x),y = as.name(g))) }
     stat_formula <- interp( ~stat_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
     shape_formula <- interp( ~shape_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
-    lcl_const_formula <- interp( ~constant(n, lcl_c))
-    ucl_const_formula <- interp( ~constant(n, ucl_c))
+    lcl_const_formula <- interp( ~constant(n, lcl_constant))
+    ucl_const_formula <- interp( ~constant(n, ucl_constant))
     center_formula <- interp( ~center_fun(x, y), x = as.name(x), y = as.name(g))
     avg_shape_formula <- interp( ~avg_shape_fun(shape))
 
@@ -777,7 +912,15 @@ np_chart_ <- function(data, x, g){
         c("n", "stat", "shape", "lcl_const", "ucl_const")
     )
 
-    stat_data <- data %>% mutate_(.dots = stat_dots)
+    # If the chart is a "group chart" then group_by and summarise,
+    # otherwise simply use mutate.
+    if(is_group){
+        stat_data <- data %>%
+            group_by_(group_var) %>%
+            summarise_(.dots = stat_dots)
+    }else{
+        stat_data <- data %>% mutate_(.dots = stat_dots)
+    }
 
     # Compute center, average shape, lcl and ucl
     stat_data <- stat_data %>% mutate_(center = center_formula,
@@ -813,8 +956,8 @@ u_chart_ <- function(data, x, g){
 
     # Set lcl and ucl constants.
     # (Note that, for some charts, constants may be different if chart parameters are given)
-    lcl_c <- "one"
-    ucl_c <- "one"
+    lcl_constant <- "one"
+    ucl_constant <- "one"
 
     # Set lcl and ucl formulas
     lcl <- "center - 3 * avg_shape"
@@ -831,7 +974,15 @@ u_chart_ <- function(data, x, g){
     # Set object Class
     class <- "u_chart"
 
-    # Add group and set group variable
+    # This variable is TRUE if the chart is a group chart (such as xbar-r, xbar-s, s and s)
+    # otherwise it is set to FALSE.
+    # If TRUE, a group_by(g) is performed before making the calculations.
+    is_group <- FALSE
+
+    # Add group and set group variable.
+    # Note: charts for single values, such as I and MR, and charts for attributes, such
+    # as c and p, do not need any group variable. However, a group variable is added in
+    # oderd to output a consistent dataframe across all charts.
     data <- data %>% mutate_(group = 1 )
     group_var <- "group"
 
@@ -843,8 +994,8 @@ u_chart_ <- function(data, x, g){
     n_formula <- if(is.null(n_fun)){ interp(~n()) }else{ interp(~n_fun(x, y), .values = list(x = as.name(x),y = as.name(g))) }
     stat_formula <- interp( ~stat_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
     shape_formula <- interp( ~shape_fun(x, y), .values = list(x = as.name(x), y = as.name(g)) )
-    lcl_const_formula <- interp( ~constant(n, lcl_c))
-    ucl_const_formula <- interp( ~constant(n, ucl_c))
+    lcl_const_formula <- interp( ~constant(n, lcl_constant))
+    ucl_const_formula <- interp( ~constant(n, ucl_constant))
     center_formula <- interp( ~center_fun(x, y), x = as.name(x), y = as.name(g))
     avg_shape_formula <- interp( ~avg_shape_fun(shape))
 
@@ -858,7 +1009,15 @@ u_chart_ <- function(data, x, g){
         c("n", "stat", "shape", "lcl_const", "ucl_const")
     )
 
-    stat_data <- data %>% mutate_(.dots = stat_dots)
+    # If the chart is a "group chart" then group_by and summarise,
+    # otherwise simply use mutate.
+    if(is_group){
+        stat_data <- data %>%
+            group_by_(group_var) %>%
+            summarise_(.dots = stat_dots)
+    }else{
+        stat_data <- data %>% mutate_(.dots = stat_dots)
+    }
 
     # Compute center, average shape, lcl and ucl
     stat_data <- stat_data %>% mutate_(center = center_formula,

@@ -6,6 +6,8 @@
 #' @param g group variable
 #' @param mu average value of x variable (if known)
 #' @param sigma standard deviation of x variable (if known)
+#' @param lcl_value lower control limit value (if known)
+#' @param ucl_value upper control limit value (if known)
 #' @importFrom lazyeval interp
 #' @importFrom dplyr select_  group_by_ mutate_ summarise_  %>% n
 #' @importFrom chartconstants constant
@@ -16,10 +18,10 @@
 #' xbar_r(ingots, kg, group, mu=1, sigma=0.01)
 #' @export
 #'
-xbar_r  <- function (data, x, g, mu = NULL, sigma = NULL){
+xbar_r  <- function (data, x, g, mu = NULL, sigma = NULL, lcl_value=NULL, ucl_value=NULL){
     x <- substitute(x)
     g <-substitute(g)
-    out <- xbar_r_ (data, x , g, mu = mu, sigma = sigma)
+    out <- xbar_r_ (data, x , g, mu = mu, sigma = sigma, lcl_value = lcl_value, ucl_value = ucl_value)
     return(out)
 }
 
