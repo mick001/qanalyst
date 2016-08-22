@@ -1,7 +1,12 @@
 ## Qanalyst
-An R package for building and visualizing quality control charts. Depends also on a package not on CRAN at the moment, [chartconstants](https://github.com/mick001/chartconstants).
+An R package for building and visualizing quality control charts. Depends also on a package not on CRAN at the moment but available on my Github: [chartconstants](https://github.com/mick001/chartconstants).
 
 Please note that the package is currently under development so it probably is buggy and the documentation is still in progress.
+
+Requires:
+- dplyr (>= 0.3.0.2)
+- lazyeval
+- ggplot2
 
 So far the implemented functions include:
 
